@@ -73,7 +73,7 @@ npm install
 
 ---
 
-## :folder: Cấu trúc source code
+## :open_file_folder: Cấu trúc source code
 
 ```bash
     src/
