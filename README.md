@@ -40,7 +40,7 @@ npm install
 
 ---
 
-## :laptop: Các script chạy command
+## :computer: Các script chạy command
 
 - 	Chạy server development với nodemon
 
