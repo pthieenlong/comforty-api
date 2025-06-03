@@ -80,10 +80,10 @@ npm install
     ├── config/           # Module cấu hình (ConfigModule đọc biến env)
     ├── controllers/      # Các controller xử lý request
     ├── middlewares/      # Các middleware khi tiếp nhận request
-    ├── types/            # Các type được định nghĩa
+    ├── models/           # Định nghĩa Model
     ├── routes/           # Định nghĩa router
     ├── services/         # Logic nghiệp vụ
-    ├── models/           # Định nghĩa Model
+    ├── types/            # Các type được định nghĩa
     ├── app.ts         # File chính chạy app Express
 ```
 
