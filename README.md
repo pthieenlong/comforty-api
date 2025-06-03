@@ -6,7 +6,7 @@ Dự án tốt nghiệp 2026 xây dựng bằng **ExpressJS + TypeScript**.
 
 ## :package: Yêu cầu hệ thống
 
-- Node.js >= 18.x
+- Node.js >= 20.x
 - npm hoặc yarn
 - Git
 
@@ -79,10 +79,11 @@ npm install
     src/
     ├── config/           # Module cấu hình (ConfigModule đọc biến env)
     ├── controllers/      # Các controller xử lý request
+    ├── database/         # Cấu hình database
     ├── middlewares/      # Các middleware khi tiếp nhận request
     ├── models/           # Định nghĩa Model
     ├── routes/           # Định nghĩa router
-    ├── services/         # Logic nghiệp vụ
+    ├── services/         # Logic nghiệp vụ với database
     ├── types/            # Các type được định nghĩa
     ├── app.ts         # File chính chạy app Express
 ```
@@ -119,5 +120,6 @@ npm install
 
 - Luôn đặt đúng biến môi trường (NODE_ENV=development / production / test).
 - Nếu thêm thư viện mới, nhớ cập nhật README.md để mọi người biết cách dùng.
+- Không được force khi commit
 
 MIT License © 2025 Skillstack

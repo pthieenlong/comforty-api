@@ -1,0 +1,14 @@
+import { NextFunction, Request, Response } from "express";
+import { UserService } from "../services/User.service";
+import CustomResponse from "../types/custom/CustomResponse";
+
+export default class UserController {
+  public async getUser(req: Request, res: Response, next: NextFunction): Promise<any> {
+    const users = await UserService.getUser();
+    return res.json(users);
+  }
+  public async createUser(req: Request, res: Response, next: NextFunction): Promise<any> {
+    const user = await UserService.createUser();
+    return res.json(user);
+  }
+}

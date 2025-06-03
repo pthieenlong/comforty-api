@@ -1,3 +1,5 @@
+import { Response } from "express";
+
 export interface Pagination {
   limit: number;
   page: number;
@@ -5,10 +7,12 @@ export interface Pagination {
   totalItems?: number;
 }
 
-export default interface CustomResponse<T = object> {
+interface CustomResponse {
   httpCode: number;
   success: boolean;
   message: string;
-  data?: T;
+  data?: object;
   pagination?: Pagination;
 }
+
+export default CustomResponse
