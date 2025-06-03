@@ -1,4 +1,4 @@
-import { Response } from "express";
+import { Response } from 'express';
 
 export interface Pagination {
   limit: number;
@@ -15,4 +15,4 @@ interface CustomResponse {
   pagination?: Pagination;
 }
 
-export default CustomResponse
+export default CustomResponse;

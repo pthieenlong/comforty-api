@@ -9,9 +9,9 @@ class ConfigModule {
     console.log(`Environment loaded from: ${envFilePath}`);
   }
 
-  get(key: string): string{
+  get(key: string): string {
     const value = process.env[key];
-    if(!value) {
+    if (!value) {
       throw new Error(`Config error: ${key} is not defined`);
     }
     return value;
