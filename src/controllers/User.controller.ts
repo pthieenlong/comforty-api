@@ -6,7 +6,6 @@ export default class UserController {
   public async getUser(
     req: Request,
     res: Response,
-    next: NextFunction,
   ): Promise<any> {
     const users = await UserService.getUser();
     return res.json(users);
@@ -15,7 +14,6 @@ export default class UserController {
   public async createUser(
     req: Request,
     res: Response,
-    next: NextFunction,
   ): Promise<any> {
     const user = await UserService.createUser();
     return res.json(user);
