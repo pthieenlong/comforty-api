@@ -36,7 +36,7 @@ export class UserService {
       };
     } catch (error) {
       return {
-        httpCode: 404,
+        httpCode: 409,
         success: false,
         message: 'USER.GET.FAIL',
       };
