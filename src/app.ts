@@ -5,11 +5,11 @@ import Database from './database/Database';
 // import { errorLogger, requestLogger } from './middleware/logger.middleware';
 import { errorLogger, requestLogger } from '@/common/middlewares/logger.middleware';
 const app = express();
-const port = configModule.getNumber('PORT');
+const port = configModule.getPort();
 
 async function bootstrap() {
   const db = Database.getInstance();
-  await db.connect(configModule.get('DB_CONNECTION_STRING'));
+  await db.connect(configModule.getDatabaseUrl());
 
   app.use(requestLogger);
   app.use(express.json());

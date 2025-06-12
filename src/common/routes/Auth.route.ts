@@ -7,4 +7,8 @@ authRoute
   .route('/register')
   .post(authController.register)
 
+authRoute
+  .route('/login')
+  .post(authController.login)
+
 export default authRoute;

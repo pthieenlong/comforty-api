@@ -2,14 +2,15 @@ import { User } from './User.model';
 import CustomRequest from '@/types/custom/CustomRequest';
 import CustomResponse from '@/types/custom/CustomResponse';
 export class UserService {
-  public static async getUser(): Promise<CustomResponse> {
+  public static async getUser(username: string): Promise<CustomResponse> {
     try {
-      const user = await User.find();
+      const user = await User.findOne({ username });
+      console.log(user);
+      
       return {
         httpCode: 200,
         success: true,
         message: 'USER.GET.SUCCESS',
-        data: user,
       };
     } catch (error) {
       return {

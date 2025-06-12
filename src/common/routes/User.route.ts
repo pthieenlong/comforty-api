@@ -7,8 +7,7 @@ const userController = new UserController();
 
 //api/user/
 userRoute
-  .route('/')
+  .route('/:username')
   .get(userController.getUser)
-  .post(userController.createUser);
 
 export default userRoute;
