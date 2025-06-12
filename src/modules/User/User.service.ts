@@ -1,7 +1,6 @@
-import { User } from '../models/User';
-import CustomRequest from '../types/custom/CustomRequest';
-import CustomResponse from '../types/custom/CustomResponse';
-
+import { User } from './User.model';
+import CustomRequest from '@/types/custom/CustomRequest';
+import CustomResponse from '@/types/custom/CustomResponse';
 export class UserService {
   public static async getUser(): Promise<CustomResponse> {
     try {
