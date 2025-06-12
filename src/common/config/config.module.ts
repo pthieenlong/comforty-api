@@ -4,7 +4,7 @@ import path from 'path';
 class ConfigModule {
   constructor() {
     const env = process.env.NODE_ENV || 'development';
-    const envFilePath = path.resolve(__dirname, `../../.env.${env}`);
+    const envFilePath = path.resolve(__dirname, `../../../.env.${env}`);
     dotenv.config({ path: envFilePath });
     console.log(`Environment loaded from: ${envFilePath}`);
   }

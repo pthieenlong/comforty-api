@@ -12,6 +12,7 @@ interface CustomResponse {
   success: boolean;
   message: string;
   data?: object;
+  error?: unknown;
   pagination?: Pagination;
 }
 
