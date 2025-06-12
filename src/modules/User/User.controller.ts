@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
-import { UserService } from '../services/User.service';
-import CustomResponse from '../types/custom/CustomResponse';
+import { UserService } from './User.service';
+import CustomResponse from '../../types/custom/CustomResponse';
 
 export default class UserController {
   public async getUser(

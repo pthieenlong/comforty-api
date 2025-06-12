@@ -1,0 +1,25 @@
+import { IsString, IsEmail, MinLength, Matches, IsStrongPassword } from 'class-validator';
+import { Match } from '@decorators/match.decorator';
+
+export class RegisterDTO {
+  @IsString()
+  @MinLength(8)
+  username: string;
+  
+  @IsString()
+  @IsStrongPassword({ minLength: 8, minUppercase: 1, minNumbers: 1, minSymbols: 1})
+  password: string;
+
+  @IsString()
+  @Match('password', {
+    message: "Password is not match"
+  })
+  confirmPassword: string;
+
+  @IsEmail()
+  email: string;
+
+  @IsString()
+  @Matches(/^[0-9]{10}$/, { message: 'Phone number must be 10 digits '})
+  phone: string;
+}

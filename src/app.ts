@@ -1,9 +1,9 @@
 import express from 'express';
-import { configModule } from './config/config.module';
-import mainRouter from './routes/index.route';
+import { configModule } from './common/config/config.module';
+import mainRouter from './common/routes/index.route';
 import Database from './database/Database';
-import { errorLogger, requestLogger } from './middleware/logger.middleware';
-
+// import { errorLogger, requestLogger } from './middleware/logger.middleware';
+import { errorLogger, requestLogger } from '@/common/middlewares/logger.middleware';
 const app = express();
 const port = configModule.getNumber('PORT');
 
