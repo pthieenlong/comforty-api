@@ -4,6 +4,8 @@ import mainRouter from './common/routes/index.route';
 import Database from './database/Database';
 import { errorLogger, requestLogger } from '@/common/middlewares/logger.middleware';
 import cookieParser from 'cookie-parser';
+import { configureSecurity } from '@middlewares/security.middleware';
+
 const app = express();
 const port = configModule.getPort();
 
@@ -16,6 +18,8 @@ async function bootstrap() {
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
   app.use(cookieParser())
+  configureSecurity(app);
+
   app.use('/api', mainRouter);
   app.use(errorLogger);
 

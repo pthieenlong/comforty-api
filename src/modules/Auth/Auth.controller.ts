@@ -21,7 +21,7 @@ export default class AuthController {
     if(result.success) {
       const tokenOptions = {
         httpOnly: true,
-        secure: configModule.getHttpSecure() === 0 ? false : true,
+        secure: configModule.getHttpSecure() === 1,
       }
       res.cookie('refreshToken', result.data?.refreshToken as string, {
         ...tokenOptions, sameSite: 'strict', maxAge: 15 * 24 * 60 * 60 * 1000
@@ -45,7 +45,7 @@ export default class AuthController {
     if(result.success) {
       return res.cookie('accessToken', result.data?.accessToken as string, {
         httpOnly: true,
-        secure: configModule.getHttpSecure() === 0 ? false : true,
+        secure: configModule.getHttpSecure() === 1,
         sameSite: 'strict',
         maxAge: 24 * 60 * 60 * 1000
       }).status(result.httpCode).json({

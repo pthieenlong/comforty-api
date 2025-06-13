@@ -36,8 +36,20 @@ npm install
 
 :four: Tạo các file môi trường
 
-- Tạo xong nhớ chỉnh sửa theo .env.example
+- Tạo các file env (development, production và test)
+- Cấu trúc của 1 file env như sau:
+  + PORT: Port của dự án
 
+  + ALLOWED_ORIGINS= url của client-side
+  + IS_HTTP_SECURE=  0 khi chạy local, 1 khi chạy production
+
+  + RATE_LIMIT_WINDOW_MS= default là 15 phút (900000)
+  + RATE_LIMIT_MAX_REQUESTS= default là 100 request mỗi 15 phút cho 1 window
+
+  + SECRET_ACCESS_TOKEN= chạy lệnh node -> require('crypto').randomBytes(64).toString('hex') 
+  + SECRET_REFRESH_TOKEN= chạy lệnh node -> require('crypto').randomBytes(64).toString('hex')
+
+  + DB_CONNECTION_STRING= mongodb connection string
 ---
 
 ## :computer: Các script chạy command
