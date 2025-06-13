@@ -1,13 +1,17 @@
+import AuthController from '@/modules/Auth/Auth.controller';
 import express, { Response, Request, response, request, NextFunction } from 'express';
 
 const authRoute = express.Router();
+const authController = new AuthController()
+authRoute
+  .route('/register')
+  .post(authController.register)
 
-//api/user/
-authRoute.use('/', (req: Request, res: Response, next: NextFunction) => {
-    res.json({
-      text: "Hello world"
-    })
-})
+authRoute
+  .route('/login')
+  .post(authController.login)
 
-
+authRoute
+  .route('/token')
+  .post(authController.getAccessToken)
 export default authRoute;

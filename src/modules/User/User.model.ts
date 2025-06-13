@@ -29,13 +29,12 @@ const UserSchema: Schema = new Schema<IUser>(
       type: String,
       required: true,
     },
-    roles: [
-      {
-        type: ERole,
-        required: true,
-        default: [ERole.USER]
-      }
-    ],
+    roles: {
+      type: [String],
+      enum: Object.values(ERole),
+      required: true,
+      default: [ERole.USER]
+    },
     username: {
       type: String,
       required: true
@@ -68,6 +67,7 @@ const UserSchema: Schema = new Schema<IUser>(
       },
     },
     isVerified: {
+      type: Number,
       default: EVerify.UNVERIFIED
     },
     token: {
@@ -75,7 +75,6 @@ const UserSchema: Schema = new Schema<IUser>(
         refreshToken: String,
         accessToken: String
       },
-      required: true
     },
     createdAt: {
       type: Date,

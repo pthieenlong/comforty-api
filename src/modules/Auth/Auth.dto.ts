@@ -23,3 +23,14 @@ export class RegisterDTO {
   @Matches(/^[0-9]{10}$/, { message: 'Phone number must be 10 digits '})
   phone: string;
 }
+
+export class LoginDTO {
+  @IsString()
+  username: string
+
+  
+
+  @IsString()
+  @MinLength(8)
+  password: string
+}

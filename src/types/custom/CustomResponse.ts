@@ -11,7 +11,11 @@ interface CustomResponse {
   httpCode: number;
   success: boolean;
   message: string;
-  data?: object;
+  data?: object & {
+    accessToken?: string,
+    refreshToken?: string,
+  };
+  error?: unknown;
   pagination?: Pagination;
 }
 
