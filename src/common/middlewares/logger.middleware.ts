@@ -2,10 +2,8 @@ import { Request, Response, NextFunction } from 'express';
 import { logger } from '@utils/logger';
 
 export const requestLogger = (req: Request, res: Response, next: NextFunction) => {
-  // Capture request start time
   const start = Date.now();
 
-  // Log request details
   const requestLog = {
     method: req.method,
     url: req.originalUrl,
@@ -16,10 +14,8 @@ export const requestLogger = (req: Request, res: Response, next: NextFunction) =
     params: req.params,
   };
 
-  // Log the incoming request
   logger.info('Incoming Request', requestLog);
 
-  // Capture response details
   res.on('finish', () => {
     const duration = Date.now() - start;
     const responseLog = {
@@ -29,14 +25,12 @@ export const requestLogger = (req: Request, res: Response, next: NextFunction) =
       duration: `${duration}ms`,
     };
 
-    // Log the response
     logger.info('Request Completed', responseLog);
   });
 
   next();
 };
 
-// Error logging middleware
 export const errorLogger = (
   err: Error,
   req: Request,

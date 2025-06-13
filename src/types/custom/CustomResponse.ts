@@ -12,7 +12,8 @@ interface CustomResponse {
   success: boolean;
   message: string;
   data?: object & {
-    accessToken?: string
+    accessToken?: string,
+    refreshToken?: string,
   };
   error?: unknown;
   pagination?: Pagination;

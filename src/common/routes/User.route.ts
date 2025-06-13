@@ -1,13 +1,13 @@
 import express from 'express';
 import UserController from '@modules/User/User.controller';
+import AuthVerifyMiddleware from '@middlewares/AuthVerify.middleware';
 
 const userRoute = express.Router();
 
 const userController = new UserController();
 
-//api/user/
 userRoute
   .route('/:username')
-  .get(userController.getUser)
+  .get(AuthVerifyMiddleware,userController.getUser)
 
 export default userRoute;

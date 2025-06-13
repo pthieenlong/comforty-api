@@ -5,8 +5,6 @@ export class UserService {
   public static async getUser(username: string): Promise<CustomResponse> {
     try {
       const user = await User.findOne({ username });
-      console.log(user);
-      
       return {
         httpCode: 200,
         success: true,

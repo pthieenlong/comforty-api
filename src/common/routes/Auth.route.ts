@@ -11,4 +11,7 @@ authRoute
   .route('/login')
   .post(authController.login)
 
+authRoute
+  .route('/token')
+  .post(authController.getAccessToken)
 export default authRoute;

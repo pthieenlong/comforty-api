@@ -7,8 +7,6 @@ export default class UserController {
     req: Request,
     res: Response,
   ): Promise<any> {
-    console.log(req.params.username);
-    
     const users = await UserService.getUser(req.params.username);
     return res.json(users);
   }
