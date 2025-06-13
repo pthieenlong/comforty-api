@@ -59,6 +59,13 @@ class ConfigModule {
     }
     return number;
   }
+  getAllowedOrigins(): string {
+    const value = this.get("ALLOWED_ORIGINS");
+    if(!value) {
+      throw new Error(`Config error: ALLOWED_ORIGINS is not defined`);
+    }
+    return value;
+  }
 }
 
 export const configModule = new ConfigModule();
