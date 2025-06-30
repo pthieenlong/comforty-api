@@ -23,8 +23,8 @@ const corsOptions = {
 
 const csrfProtection = csrf({
   cookie: {
-    httpOnly: true,
-    secure: configModule.getHttpSecure() === 1,
+    httpOnly: false,
+    secure: false,
     sameSite: 'strict'
   }
 });

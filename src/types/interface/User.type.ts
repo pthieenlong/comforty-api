@@ -1,8 +1,6 @@
 export enum ERole {
   ADMIN = "ADMIN",
   USER = "USER",
-  TALENT = "TALENT",
-  BUSINESS = "BUSINESS",
 } 
 
 export enum EVerify {

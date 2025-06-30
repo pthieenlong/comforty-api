@@ -4,11 +4,18 @@ import CustomResponse from '@/types/custom/CustomResponse';
 export class UserService {
   public static async getUser(username: string): Promise<CustomResponse> {
     try {
-      const user = await User.findOne({ username });
+      const userSchema = await User.findOne({ username });
+      const data = {
+        username: userSchema?.username,
+        email: userSchema?.email,
+        phone: userSchema?.phone,
+        avatar: userSchema?.avatar
+      }
       return {
         httpCode: 200,
         success: true,
         message: 'USER.GET.SUCCESS',
+        data
       };
     } catch (error) {
       return {

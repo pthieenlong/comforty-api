@@ -5,6 +5,7 @@ import Database from './database/Database';
 import { errorLogger, requestLogger } from '@/common/middlewares/logger.middleware';
 import cookieParser from 'cookie-parser';
 import { configureSecurity } from '@middlewares/security.middleware';
+import { caslModule } from './common/config/casl.module';
 
 const app = express();
 const port = configModule.getPort();
@@ -13,6 +14,7 @@ async function bootstrap() {
   const db = Database.getInstance();
   await db.connect(configModule.getDatabaseUrl());
 
+  caslModule.initialize();
   
   app.use(requestLogger);
   app.use(express.json());
