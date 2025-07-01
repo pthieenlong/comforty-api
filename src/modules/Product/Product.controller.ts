@@ -24,13 +24,10 @@ export default class ProductController {
     return res.status(result.httpCode).json(result);
   }
 
-  public async getAllProductsWithCategorySlug( 
-    req: Request,
-    res: Response
-  ):Promise<any> {
-    const categorySlug = req.query;
-    console.log(categorySlug);
-    return res.status(200)
+  public async getAllProductsWithCategorySlug(req: Request, res: Response):Promise<any> {
+    const categorySlug = req.query.c;
+    const results = await ProductService.getAllProductsWithCategorySlug(categorySlug as string);
+    return res.status(results.httpCode).json(results)
   }
 
   public async getAllProducts(
@@ -38,5 +35,19 @@ export default class ProductController {
     res: Response
   ) {
 
+  }
+
+  public async getBestProducts(req: Request, res: Response):Promise<any> {
+    const results = await ProductService.getBestProducts();
+    return res.status(results.httpCode).json(results)
+  }
+
+  public async getProductsByLimit(req: Request, res: Response):Promise<any> {
+    const results = await ProductService.getProductsByLimit('4');
+    return res.status(results.httpCode).json(results)
+  }
+  public async getNewProducts(req: Request, res: Response):Promise<any> {
+    const results = await ProductService.getNewProducts('4');
+    return res.status(results.httpCode).json(results)
   }
 }

@@ -6,6 +6,7 @@ import { errorLogger, requestLogger } from '@/common/middlewares/logger.middlewa
 import cookieParser from 'cookie-parser';
 import { configureSecurity } from '@middlewares/security.middleware';
 import { caslModule } from './common/config/casl.module';
+import path from 'path';
 
 const app = express();
 const port = configModule.getPort();
@@ -21,7 +22,7 @@ async function bootstrap() {
   app.use(express.urlencoded({ extended: true }));
   app.use(cookieParser())
   configureSecurity(app);
-
+  app.use('/images', express.static(path.join(__dirname, 'public/images')));
   app.use('/api', mainRouter);
   app.use(errorLogger);
 

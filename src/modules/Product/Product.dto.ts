@@ -7,8 +7,9 @@ export class CreateProductDTO {
   @IsNumber()
   price: number;
   
-  @IsString()
-  category: string;
+  @IsArray()
+  @IsString({ each: true })
+  category: string[];
   
   @IsOptional()
   @IsArray()

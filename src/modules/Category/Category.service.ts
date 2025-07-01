@@ -7,15 +7,18 @@ export class CategoryService {
   public static async getCategories(): Promise<CustomResponse> {
     try {
       const categorySchema = await Category.find();
-      const result = {
-      
-      }
+      const results = categorySchema.map((cate) => {
+        return {
+          name: cate.name,
+          slug: cate.slug
+        }
+      });
       return {
         httpCode: 200,
         success: true,
         message: "CATEGORY.GET.SUCCESS",
         data: {
-          ...categorySchema
+          ...results
         }
       }
     } 

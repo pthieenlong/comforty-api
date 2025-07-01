@@ -9,7 +9,7 @@ export interface IProduct extends Document {
   images: string[];
   salePercent: number,
   isSale: boolean,
-  category: string,
+  category: string[],
   rating: number,
   colors: string[],
   sizes: string[],
@@ -48,7 +48,7 @@ const ProductSchema: Schema = new Schema<IProduct>({
     default: false,
   },
   category: {
-    type: String,
+    type: [String],
     ref: 'Category',
     required: true
   },

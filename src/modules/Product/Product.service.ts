@@ -36,14 +36,14 @@ export default class ProductService {
         path: 'category',
         model: 'Category',
         localField: 'category',
-        foreignField: 'slug',
+        foreignField: categorySlug,
         justOne: true
       })
-      console.log(products);
       return {
         httpCode: 200,
         success: true,
-        message: "PRODUCT.GET.SUCCESS"
+        message: "PRODUCT.GET.SUCCESS",
+        data: products
       };
     } catch (error) {
       return {
@@ -91,6 +91,64 @@ export default class ProductService {
         httpCode: 409,
         success: false,
         message: "PRODUCT.CREATE.FAIL"
+      };
+    }
+  }
+
+  public static async getBestProducts(): Promise<CustomResponse> {
+    try {
+      const products = await Product.find().sort({ rating: -1 }).limit(4);
+      return {
+        httpCode: 200,
+        success: true,
+        message: "PRODUCT.GET.SUCCESS",
+        data: products
+      };
+    } catch (error) {
+      return {
+        httpCode: 409,
+        success: false,
+        message: "PRODUCT.GET.FAIL",
+        error
+      };
+    }
+  }
+
+  public static async getProductsByLimit(limit: string): Promise<CustomResponse> {
+    try {
+      const products = await Product.find().limit(parseInt(limit));
+      return {
+        httpCode: 200,
+        success: true,
+        message: "PRODUCT.GET.SUCCESS",
+        data: products
+      };
+    } catch (error) {
+      return {
+        httpCode: 409,
+        success: false,
+        message: "PRODUCT.GET.FAIL"
+      };
+    }
+  }
+
+  public static async getNewProducts(limit: string): Promise<CustomResponse> {
+    try {
+      const products = await Product.find().sort({
+        createdAt: -1,
+        updatedAt: -1,
+      }).limit(parseInt(limit));
+      return {
+        httpCode: 200,
+        success: true,
+        message: "PRODUCT.GET.SUCCESS",
+        data: products
+      };
+    } catch (error) {
+      return {
+        httpCode: 409,
+        success: false,
+        message: "PRODUCT.GET.FAIL"
       };
     }
   }
