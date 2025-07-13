@@ -152,4 +152,53 @@ export default class ProductService {
       };
     }
   }
+
+  public static async getAllProducts(): Promise<CustomResponse> {
+    try {
+      const products = await Product.find();
+      return {
+        httpCode: 200,
+        success: true,
+        message: "PRODUCTS.GET.SUCCESS",
+        data: products
+      }
+    } catch (error) {
+      return {
+        httpCode: 409,
+        message: "PRODUCTS.GET.FAIL",
+        success: false,
+        error
+      }
+    }
+  }
+
+  public static async getSearchProducts(query: string): Promise<CustomResponse> { 
+    try {
+      const $regex = new RegExp(query, 'i');
+      const products = await Product.find({ name: $regex });
+      console.log(products);
+      
+      if(products.length < 0) {
+        return {
+          httpCode: 404,
+          message: "PRODUCTS.GET.SUCCESS",
+          success: true,
+          data: []
+        }
+      }
+      else return {
+        httpCode: 200,
+        message: "PRODUCTS.GET.SUCCESS",
+        success: true,
+        data: products
+      }
+    } catch (error) {
+      return {
+        httpCode: 409,
+        message: "PRODUCTS.GET.FAIL",
+        success: false,
+        error
+      }
+    }
+  }
 }

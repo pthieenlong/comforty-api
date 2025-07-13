@@ -17,9 +17,7 @@ export class CategoryService {
         httpCode: 200,
         success: true,
         message: "CATEGORY.GET.SUCCESS",
-        data: {
-          ...results
-        }
+        data: [...results]
       }
     } 
     catch(error) {

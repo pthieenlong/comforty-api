@@ -13,6 +13,12 @@ productRoute
     if(req.query.c) {
       return productController.getAllProductsWithCategorySlug(req, res);
     }
+    else if(req.query.search) {
+      return productController.getSearchProducts(req, res);
+    }
+    else {
+      return productController.getAllProducts(req, res);
+    }
   });
   
   

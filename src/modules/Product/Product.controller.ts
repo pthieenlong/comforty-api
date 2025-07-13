@@ -30,11 +30,9 @@ export default class ProductController {
     return res.status(results.httpCode).json(results)
   }
 
-  public async getAllProducts(
-    req: Request,
-    res: Response
-  ) {
-
+  public async getAllProducts(req: Request, res: Response) {
+    const result = await ProductService.getAllProducts();
+    return res.status(result.httpCode).json(result);
   }
 
   public async getBestProducts(req: Request, res: Response):Promise<any> {
@@ -49,5 +47,10 @@ export default class ProductController {
   public async getNewProducts(req: Request, res: Response):Promise<any> {
     const results = await ProductService.getNewProducts('4');
     return res.status(results.httpCode).json(results)
+  }
+  public async getSearchProducts(req: Request, res: Response): Promise<any> {
+    const query = req.query.search
+    const result = await ProductService.getSearchProducts(query as string);
+    return res.status(result.httpCode).json(result);
   }
 }
