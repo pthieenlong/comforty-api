@@ -31,7 +31,8 @@ export default class ProductController {
   }
 
   public async getAllProducts(req: Request, res: Response) {
-    const result = await ProductService.getAllProducts();
+    const { page } = req.query;
+    const result = await ProductService.getAllProducts(parseInt(page as string));
     return res.status(result.httpCode).json(result);
   }
 

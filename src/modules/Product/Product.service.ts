@@ -153,14 +153,22 @@ export default class ProductService {
     }
   }
 
-  public static async getAllProducts(): Promise<CustomResponse> {
+  public static async getAllProducts(page = 1, limit = 10): Promise<CustomResponse> {
     try {
-      const products = await Product.find();
+      const skip = (page - 1) * limit;
+      const products = await Product.find()
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit);
+      const totalItems = await Product.countDocuments();
       return {
         httpCode: 200,
         success: true,
         message: "PRODUCTS.GET.SUCCESS",
-        data: products
+        data: { ...products },
+        pagination: {
+          limit, page, totalPage: Math.ceil(totalItems / limit), totalItems
+        }
       }
     } catch (error) {
       return {
