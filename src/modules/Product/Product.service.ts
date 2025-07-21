@@ -153,7 +153,7 @@ export default class ProductService {
     }
   }
 
-  public static async getAllProducts(page = 1, limit = 10): Promise<CustomResponse> {
+  public static async getAllProducts(page = 1, limit = 9): Promise<CustomResponse> {
     try {
       const skip = (page - 1) * limit;
       const products = await Product.find()
@@ -165,7 +165,7 @@ export default class ProductService {
         httpCode: 200,
         success: true,
         message: "PRODUCTS.GET.SUCCESS",
-        data: { ...products },
+        data: [ ...products ],
         pagination: {
           limit, page, totalPage: Math.ceil(totalItems / limit), totalItems
         }
@@ -173,7 +173,7 @@ export default class ProductService {
     } catch (error) {
       return {
         httpCode: 409,
-        message: "PRODUCTS.GET.FAIL",
+        message: "PRODUCTS.GET.CONFLICT",
         success: false,
         error
       }
@@ -203,7 +203,7 @@ export default class ProductService {
     } catch (error) {
       return {
         httpCode: 409,
-        message: "PRODUCTS.GET.FAIL",
+        message: "PRODUCTS.GET.CONFLICT",
         success: false,
         error
       }

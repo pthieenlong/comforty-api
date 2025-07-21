@@ -32,7 +32,7 @@ export default class ProductController {
 
   public async getAllProducts(req: Request, res: Response) {
     const { page } = req.query;
-    const result = await ProductService.getAllProducts(parseInt(page as string));
+    const result = await ProductService.getAllProducts(parseInt(page as string ?? 1));
     return res.status(result.httpCode).json(result);
   }
 
