@@ -18,10 +18,6 @@ export class RegisterDTO {
 
   @IsEmail()
   email: string;
-
-  @IsString()
-  @Matches(/^[0-9]{10}$/, { message: 'Phone number must be 10 digits '})
-  phone: string;
 }
 
 export class LoginDTO {

@@ -17,7 +17,7 @@ export default class AuthController {
   public async login(req: Request, res: Response): Promise<any> {
     const input = req.body;
     const result = await AuthService.login(input);
-
+    
     if(result.success) {
       const tokenOptions = {
         httpOnly: true,
@@ -29,6 +29,7 @@ export default class AuthController {
       res.cookie('accessToken', result.data?.accessToken as string, {
         ...tokenOptions, sameSite: 'strict', maxAge: 24 * 60 * 60 * 1000
       })
+
       return res.status(result.httpCode).json({
         httpCode: result.httpCode,
         success: result.success,
