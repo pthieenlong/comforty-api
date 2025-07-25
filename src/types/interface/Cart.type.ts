@@ -1,4 +1,4 @@
 export enum CartStatus {
-  PENDING,
-  PAID
+  PENDING = 'PENDING',
+  PAID = 'PAID',
 }
