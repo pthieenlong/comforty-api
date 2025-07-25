@@ -5,29 +5,29 @@ import jwt from 'jsonwebtoken';
 import { configModule } from '@/common/config/config.module';
 import { ERole } from '@/types/interface/User.type';
 export default class CartController {
-  public async getCartByUser(req: CustomRequest, res: Response) {
-    const userID = req.userID;
-    const cart = await CartService.getCartByUser(userID as string);
+  public async getCartByUser(req: Request, res: Response): Promise<any> {
+    const username = req.params.username;
+    const cart = await CartService.getCartByUser(username as string);
     return res.status(cart.httpCode).json(cart);
   }
 
-  public async getAllCart(req: CustomRequest, res: Response) {
-    const userID = req.userID;
+  public async getAllCart(req: Request, res: Response): Promise<any> {
+    const username = req.params.username;
 
-    const carts = await CartService.getAllCart(userID as string);
+    const carts = await CartService.getAllCart(username as string);
     return res.status(carts.httpCode).json(carts);
   }
-  public async createCart(req: CustomRequest, res: Response) {
-    const userID = req.userID;
+  public async createCart(req: Request, res: Response): Promise<any> {
+    const username = req.params.username;
 
-    const carts = await CartService.createCart(userID as string);
+    const carts = await CartService.createCart(username as string);
     return res.status(carts.httpCode).json(carts);
   }
-  public async addProduct(req: CustomRequest, res: Response) {
-    const userID = req.userID;
+  public async addProduct(req: Request, res: Response): Promise<any> {
+    const username = req.params.username;
     const slug = req.body;
 
-    const result = await CartService.addProduct(userID as string, slug);
+    const result = await CartService.addProduct(username as string, slug);
 
     return res.status(result.httpCode).json(result);
   }

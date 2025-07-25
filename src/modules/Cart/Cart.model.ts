@@ -3,7 +3,7 @@ import { CartStatus } from '@/types/interface/Cart.type';
 
 export default interface ICart extends Document {
   _id: string;
-  userID: string;
+  username: string;
   products: [
     {
       slug: string;
@@ -23,7 +23,7 @@ const CartSchema: Schema = new Schema<ICart>({
     type: String,
     required: true,
   },
-  userID: {
+  username: {
     type: String,
     required: true,
   },

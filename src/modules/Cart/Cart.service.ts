@@ -6,9 +6,12 @@ import Utils from '@/utils/utils';
 import { Cart } from './Cart.model';
 import { Product } from '../Product/Product.model';
 export default class CartService {
-  public static async getCartByUser(userID: string): Promise<CustomResponse> {
+  public static async getCartByUser(username: string): Promise<CustomResponse> {
     try {
-      const carts = await Cart.findOne({ userID, status: CartStatus.PENDING });
+      const carts = await Cart.findOne({
+        username,
+        status: CartStatus.PENDING,
+      });
       if (!carts) {
         return {
           httpCode: 200,
@@ -31,9 +34,9 @@ export default class CartService {
       };
     }
   }
-  public static async getAllCart(userID: string): Promise<CustomResponse> {
+  public static async getAllCart(username: string): Promise<CustomResponse> {
     try {
-      const carts = await Cart.find({ userID });
+      const carts = await Cart.find({ username });
       return {
         httpCode: 200,
         success: true,
@@ -48,9 +51,9 @@ export default class CartService {
       };
     }
   }
-  public static async createCart(userID: string): Promise<CustomResponse> {
+  public static async createCart(username: string): Promise<CustomResponse> {
     try {
-      const cart = await Cart.findOne({ userID, status: CartStatus.PENDING });
+      const cart = await Cart.findOne({ username, status: CartStatus.PENDING });
       if (cart) {
         return {
           httpCode: 200,
@@ -61,7 +64,7 @@ export default class CartService {
       } else {
         const result = await Cart.create({
           _id: uuidv4(),
-          userID,
+          username,
         });
         return {
           httpCode: 201,
@@ -80,11 +83,11 @@ export default class CartService {
   }
 
   public static async addProduct(
-    userID: string,
+    username: string,
     slug: string,
   ): Promise<CustomResponse> {
     try {
-      const cart = await Cart.findOne({ userID, status: CartStatus.PENDING });
+      const cart = await Cart.findOne({ username, status: CartStatus.PENDING });
       if (!cart) {
         return {
           httpCode: 404,
@@ -156,7 +159,7 @@ export default class CartService {
   }
 
   public static async updateProductQuantity(
-    userID: string,
+    username: string,
     slug: string,
     newQuantity: number,
   ): Promise<CustomResponse> {
@@ -176,7 +179,7 @@ export default class CartService {
   }
 
   public static async removeProduct(
-    userID: string,
+    username: string,
     slug: string,
   ): Promise<CustomResponse> {
     try {
@@ -194,7 +197,7 @@ export default class CartService {
     }
   }
 
-  public static async clearCart(userID: string): Promise<CustomResponse> {
+  public static async clearCart(username: string): Promise<CustomResponse> {
     try {
       return {
         httpCode: 404,
@@ -211,7 +214,7 @@ export default class CartService {
   }
 
   public static async updateStatus(
-    userID: string,
+    username: string,
     status: CartStatus,
   ): Promise<CustomResponse> {
     try {
@@ -229,10 +232,10 @@ export default class CartService {
     }
   }
 
-  public static async checkout(userID: string): Promise<CustomResponse> {
+  public static async checkout(username: string): Promise<CustomResponse> {
     try {
       const cart = await Cart.findOne({
-        userID,
+        username,
         status: CartStatus.PENDING,
       });
 
