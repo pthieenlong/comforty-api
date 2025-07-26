@@ -183,6 +183,7 @@ export default class CartService {
     slug: string,
   ): Promise<CustomResponse> {
     try {
+
       return {
         httpCode: 404,
         success: false,
@@ -232,24 +233,23 @@ export default class CartService {
     }
   }
 
-  public static async checkout(username: string): Promise<CustomResponse> {
+  public static async checkout(username: string, products: any): Promise<CustomResponse> {
     try {
-      const cart = await Cart.findOne({
-        username,
-        status: CartStatus.PENDING,
-      });
-
-      if (!cart)
-        return {
-          httpCode: 404,
-          success: false,
-          message: 'CART.GET.FAIL',
-        };
-      else {
-        cart.status = CartStatus.PAID;
-        const result = await cart.save();
-
+        const result = await Cart.create(
+          {
+            _id: uuidv4(),
+            username,
+            status: CartStatus.PAID,
+            products
+          }
+        )
+        console.log(result);
+        
         if (result) {
+          await Cart.create({
+            _id: uuidv4(),
+            username,
+          });
           return {
             httpCode: 201,
             success: true,
@@ -262,12 +262,12 @@ export default class CartService {
             message: 'CART.CHECKOUT.CONFLICT',
           };
         }
-      }
     } catch (error) {
+      console.log('error:', error)
       return {
         httpCode: 409,
         success: false,
-        message: 'CART.CHECKOUT.CONFLICT',
+        message: 'CART.CHECKOUT.CONFLICTs',
       };
     }
   }
