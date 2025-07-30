@@ -3,7 +3,7 @@ import ICategory from '../Category/Category.model';
 
 export interface IProduct extends Document {
   _id: string;
-  name: string;
+  title: string;
   slug: string;
   price: number;
   images: string[];
@@ -12,8 +12,9 @@ export interface IProduct extends Document {
   category: string[];
   rating: number;
   colors: string[];
-  sizes: string[];
   isVisible: boolean;
+  shortDesc: string;
+  longDesc: string;
   updatedAt: Date;
   createdAt: Date;
 }
@@ -23,7 +24,7 @@ const ProductSchema: Schema = new Schema<IProduct>({
     type: String,
     required: true,
   },
-  name: {
+  title: {
     type: String,
     required: true,
   },
@@ -50,7 +51,7 @@ const ProductSchema: Schema = new Schema<IProduct>({
   category: {
     type: [String],
     ref: 'Category',
-    required: true,
+    default: ['Ban'],
   },
   rating: {
     type: Number,
@@ -58,11 +59,13 @@ const ProductSchema: Schema = new Schema<IProduct>({
   },
   colors: {
     type: [String],
-    default: ['#000', '#fff'],
+    default: ['#1E1E1E', '#B26F3F', '#F7AD94'],
   },
-  sizes: {
-    type: [String],
-    default: ['XL', 'L', 'M', 'SM'],
+  shortDesc: {
+    type: String,
+  },
+  longDesc: {
+    type: String,
   },
   isVisible: {
     type: Boolean,

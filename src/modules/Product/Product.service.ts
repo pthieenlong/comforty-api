@@ -60,7 +60,7 @@ export default class ProductService {
     productInput: CreateProductDTO,
   ): Promise<CustomResponse> {
     try {
-      const slug = Utils.SlugConverter(productInput.name);
+      const slug = Utils.SlugConverter(productInput.title);
       const isExist = await Product.findOne({ slug });
       if (isExist) {
         return {
@@ -101,7 +101,7 @@ export default class ProductService {
 
   public static async getBestProducts(): Promise<CustomResponse> {
     try {
-      const products = await Product.find().sort({ rating: -1 }).limit(4);
+      const products = await Product.find().sort({ rating: -1 }).limit(8);
       return {
         httpCode: 200,
         success: true,
@@ -145,7 +145,7 @@ export default class ProductService {
           createdAt: -1,
           updatedAt: -1,
         })
-        .limit(parseInt(limit));
+        .limit(8);
       return {
         httpCode: 200,
         success: true,
@@ -199,7 +199,7 @@ export default class ProductService {
   ): Promise<CustomResponse> {
     try {
       const $regex = new RegExp(query, 'i');
-      const products = await Product.find({ name: $regex });
+      const products = await Product.find({ title: $regex });
       console.log(products);
 
       if (products.length < 0) {

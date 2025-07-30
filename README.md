@@ -1,4 +1,4 @@
-# 🚀 Skillstack
+# 🚀 Comforty
 
 Dự án Comforty API xây dựng bằng **ExpressJS + TypeScript**.  
 Đã setup sẵn Prettier, ESLint, Husky, lint-staged để kiểm soát code sạch trước khi commit.
@@ -18,15 +18,15 @@ Dự án Comforty API xây dựng bằng **ExpressJS + TypeScript**.
 :one: Tạo thư mục chính
 
 ```bash
-mkdir skillstack
+mkdir Comforty
 ```
 
 :two: Clone dự án
 
 ```bash
-cd skillstack
-git clone https://github.com/pthieenlong/skillstack-backend
-cd skillstack-backend
+cd Comforty
+git clone https://github.com/pthieenlong/comforty-api
+cd comforty-api
 ```
 
 :three: Cài đặt các dependencies:
@@ -139,4 +139,4 @@ npm install
 - Nếu thêm thư viện mới, nhớ cập nhật README.md để mọi người biết cách dùng.
 - Không được force khi commit
 
-MIT License © 2025 Skillstack
+MIT License © 2025 Comforty

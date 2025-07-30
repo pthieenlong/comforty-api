@@ -128,7 +128,7 @@ export default class CartService {
       }
       cart.products.push({
         slug: product.slug,
-        name: product.name,
+        name: product.title,
         image: product.images[0],
         quantity: 1,
         price: product.price,
@@ -183,7 +183,6 @@ export default class CartService {
     slug: string,
   ): Promise<CustomResponse> {
     try {
-
       return {
         httpCode: 404,
         success: false,
@@ -233,37 +232,38 @@ export default class CartService {
     }
   }
 
-  public static async checkout(username: string, products: any): Promise<CustomResponse> {
+  public static async checkout(
+    username: string,
+    products: any,
+  ): Promise<CustomResponse> {
     try {
-        const result = await Cart.create(
-          {
-            _id: uuidv4(),
-            username,
-            status: CartStatus.PAID,
-            products
-          }
-        )
-        console.log(result);
-        
-        if (result) {
-          await Cart.create({
-            _id: uuidv4(),
-            username,
-          });
-          return {
-            httpCode: 201,
-            success: true,
-            message: 'CART.CHECKOUT.SUCCESS',
-          };
-        } else {
-          return {
-            httpCode: 409,
-            success: false,
-            message: 'CART.CHECKOUT.CONFLICT',
-          };
-        }
+      const result = await Cart.create({
+        _id: uuidv4(),
+        username,
+        status: CartStatus.PAID,
+        products,
+      });
+      console.log(result);
+
+      if (result) {
+        await Cart.create({
+          _id: uuidv4(),
+          username,
+        });
+        return {
+          httpCode: 201,
+          success: true,
+          message: 'CART.CHECKOUT.SUCCESS',
+        };
+      } else {
+        return {
+          httpCode: 409,
+          success: false,
+          message: 'CART.CHECKOUT.CONFLICT',
+        };
+      }
     } catch (error) {
-      console.log('error:', error)
+      console.log('error:', error);
       return {
         httpCode: 409,
         success: false,
