@@ -1,32 +1,34 @@
-import helmet from "helmet";
+import helmet from 'helmet';
 import cors from 'cors';
-import rateLimit from "express-rate-limit";
+import rateLimit from 'express-rate-limit';
 import csrf from 'csurf';
 import { Express, Request, Response, NextFunction } from 'express';
-import { configModule } from "@config/config.module";
+import { configModule } from '@config/config.module';
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100,
   message: {
     success: false,
-    message: "REQUEST.SEND.TOO_MANY"
-  }
+    message: 'REQUEST.SEND.TOO_MANY',
+  },
 });
 
 const corsOptions = {
-  origin: configModule.getAllowedOrigins().split(',') || `http://localhost:${configModule.getPort()}`,
+  origin:
+    configModule.getAllowedOrigins().split(',') ||
+    `http://localhost:${configModule.getPort()}`,
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization'],
 };
 
 const csrfProtection = csrf({
   cookie: {
     httpOnly: false,
     secure: false,
-    sameSite: 'strict'
-  }
+    sameSite: 'strict',
+  },
 });
 
 export const configureSecurity = (app: Express) => {
@@ -37,17 +39,17 @@ export const configureSecurity = (app: Express) => {
   app.use('/api/', limiter);
 
   app.use((req, res, next) => {
-    if(req.path.startsWith('/api/auth')) {
+    if (req.path.startsWith('/api/auth')) {
       next();
     } else {
       csrfProtection(req, res, next);
     }
-  })
+  });
 
   app.use((req, res, next) => {
-    if(req.csrfToken) {
+    if (req.csrfToken) {
       res.cookie('XSRF-TOKEN', req.csrfToken());
     }
     next();
-  })
-}
+  });
+};

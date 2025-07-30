@@ -10,6 +10,6 @@ userRoute.use(AuthVerifyMiddleware);
 
 userRoute
   .route('/:username')
-  .get(canRead('User'),userController.getUser)
+  .get(canRead('User'), canUpdate('User'), userController.getUser);
 
 export default userRoute;

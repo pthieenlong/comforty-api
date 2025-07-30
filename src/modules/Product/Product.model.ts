@@ -1,35 +1,35 @@
-import mongoose, { Document, Schema } from "mongoose"
-import ICategory from "../Category/Category.model"
+import mongoose, { Document, Schema } from 'mongoose';
+import ICategory from '../Category/Category.model';
 
 export interface IProduct extends Document {
-  _id: string,
-  name: string,
-  slug: string,
-  price: number,
+  _id: string;
+  name: string;
+  slug: string;
+  price: number;
   images: string[];
-  salePercent: number,
-  isSale: boolean,
-  category: string[],
-  rating: number,
-  colors: string[],
-  sizes: string[],
-  isVisible: boolean,
-  updatedAt: Date,
-  createdAt: Date
+  salePercent: number;
+  isSale: boolean;
+  category: string[];
+  rating: number;
+  colors: string[];
+  sizes: string[];
+  isVisible: boolean;
+  updatedAt: Date;
+  createdAt: Date;
 }
 
 const ProductSchema: Schema = new Schema<IProduct>({
   _id: {
     type: String,
-    required: true
+    required: true,
   },
   name: {
     type: String,
-    required: true
+    required: true,
   },
   slug: {
     type: String,
-    required: true
+    required: true,
   },
   price: {
     type: Number,
@@ -37,7 +37,7 @@ const ProductSchema: Schema = new Schema<IProduct>({
   },
   images: {
     type: [String],
-    default: ["https://placehold.co/600x400"],
+    default: ['https://placehold.co/600x400'],
   },
   salePercent: {
     type: Number,
@@ -50,19 +50,19 @@ const ProductSchema: Schema = new Schema<IProduct>({
   category: {
     type: [String],
     ref: 'Category',
-    required: true
+    required: true,
   },
   rating: {
     type: Number,
-    default: 0
+    default: 0,
   },
   colors: {
     type: [String],
-    default: ["#000", "#fff"],
+    default: ['#000', '#fff'],
   },
   sizes: {
     type: [String],
-    default: ["XL", "L", "M", "SM"]
+    default: ['XL', 'L', 'M', 'SM'],
   },
   isVisible: {
     type: Boolean,
@@ -70,11 +70,11 @@ const ProductSchema: Schema = new Schema<IProduct>({
   },
   updatedAt: {
     type: Date,
-    default: Date.now()
+    default: Date.now(),
   },
   createdAt: {
     type: Date,
-    default: Date.now()
-  } 
-})
+    default: Date.now(),
+  },
+});
 export const Product = mongoose.model<IProduct>('Product', ProductSchema);
