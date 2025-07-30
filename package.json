@@ -1,7 +1,7 @@
 {
-  "name": "skillstack-backend",
+  "name": "comforty-api",
   "version": "1.0.0",
-  "description": "Dự án tốt nghiệp 2026",
+  "description": "Comforty API",
   "main": "app.js",
   "scripts": {
     "dev": "cross-env NODE_ENV=development nodemon --exec ts-node -r tsconfig-paths/register src/app.ts",
@@ -13,16 +13,16 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/pthieenlong/skillstack-backend.git"
+    "url": "git+https://github.com/pthieenlong/comforty-api.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "bugs": {
-    "url": "https://github.com/pthieenlong/skillstack-backend/issues"
+    "url": "https://github.com/pthieenlong/comforty-api/issues"
   },
-  "homepage": "https://github.com/pthieenlong/skillstack-backend#readme",
+  "homepage": "https://github.com/pthieenlong/comforty-api#readme",
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
     "@types/cookie-parser": "^1.4.9",

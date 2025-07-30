@@ -1,5 +1,6 @@
 # 🚀 Skillstack
-Dự án tốt nghiệp 2026 xây dựng bằng **ExpressJS + TypeScript**.  
+
+Dự án Comforty API xây dựng bằng **ExpressJS + TypeScript**.  
 Đã setup sẵn Prettier, ESLint, Husky, lint-staged để kiểm soát code sạch trước khi commit.
 
 ---
@@ -32,52 +33,55 @@ cd skillstack-backend
 
 ```bash
 npm install
-``` 
+```
 
 :four: Tạo các file môi trường
 
 - Tạo các file env (development, production và test)
 - Cấu trúc của 1 file env như sau:
-  + PORT: Port của dự án
 
-  + ALLOWED_ORIGINS= url của client-side
-  + IS_HTTP_SECURE=  0 khi chạy local, 1 khi chạy production
+  - PORT: Port của dự án
 
-  + RATE_LIMIT_WINDOW_MS= default là 15 phút (900000)
-  + RATE_LIMIT_MAX_REQUESTS= default là 100 request mỗi 15 phút cho 1 window
+  - ALLOWED_ORIGINS= url của client-side
+  - IS_HTTP_SECURE= 0 khi chạy local, 1 khi chạy production
 
-  + SECRET_ACCESS_TOKEN= chạy lệnh node -> require('crypto').randomBytes(64).toString('hex') 
-  + SECRET_REFRESH_TOKEN= chạy lệnh node -> require('crypto').randomBytes(64).toString('hex')
+  - RATE_LIMIT_WINDOW_MS= default là 15 phút (900000)
+  - RATE_LIMIT_MAX_REQUESTS= default là 100 request mỗi 15 phút cho 1 window
 
-  + DB_CONNECTION_STRING= mongodb connection string
+  - SECRET_ACCESS_TOKEN= chạy lệnh node -> require('crypto').randomBytes(64).toString('hex')
+  - SECRET_REFRESH_TOKEN= chạy lệnh node -> require('crypto').randomBytes(64).toString('hex')
+
+  - DB_CONNECTION_STRING= mongodb connection string
+
 ---
 
 ## :computer: Các script chạy command
 
-- 	Chạy server development với nodemon
+-     Chạy server development với nodemon
 
 ```bash
   npm run dev
 ```
 
-- 	Build project TypeScript ra thư mục dist
+-     Build project TypeScript ra thư mục dist
 
 ```bash
   npm run build
 ```
 
-- 	Chạy production (sau khi build)
+-     Chạy production (sau khi build)
+
 ```bash
   npm run start
 ```
 
-- 	Chạy môi trường test
+-     Chạy môi trường test
 
 ```bash
   npm run test
 ```
 
-- 	Format code với Prettier
+-     Format code với Prettier
 
 ```bash
   npm run format
@@ -104,9 +108,10 @@ npm install
 
 ## :wrench: Husky + lint-staged
 
-* Khi chạy ```bash git commit```, dự án sẽ:
-- Format các file ```bash .ts``` đã stage bằng Prettier
-- Nếu lỗi, commit sẽ bị chặn và buộc phải fix trước.
+- Khi chạy `bash git commit`, dự án sẽ:
+
+* Format các file `bash .ts` đã stage bằng Prettier
+* Nếu lỗi, commit sẽ bị chặn và buộc phải fix trước.
 
 ---
 
@@ -114,11 +119,11 @@ npm install
 
 :one: Build project:
 
-```bash npm run build```
+`bash npm run build`
 
 :two: Run project:
 
-```bash npm run start```
+`bash npm run start`
 
 ---
 
@@ -128,7 +133,7 @@ npm install
 
 ---
 
-## :books:  Ghi chú
+## :books: Ghi chú
 
 - Luôn đặt đúng biến môi trường (NODE_ENV=development / production / test).
 - Nếu thêm thư viện mới, nhớ cập nhật README.md để mọi người biết cách dùng.
