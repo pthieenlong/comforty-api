@@ -23,13 +23,13 @@ const corsOptions = {
   allowedHeaders: ['Content-Type', 'Authorization'],
 };
 
-const csrfProtection = csrf({
-  cookie: {
-    httpOnly: false,
-    secure: false,
-    sameSite: 'strict',
-  },
-});
+// const csrfProtection = csrf({
+//   cookie: {
+//     httpOnly: false,
+//     secure: false,
+//     sameSite: 'strict'
+//   }
+// });
 
 export const configureSecurity = (app: Express) => {
   app.use(helmet());
@@ -42,14 +42,13 @@ export const configureSecurity = (app: Express) => {
     if (req.path.startsWith('/api/auth')) {
       next();
     } else {
-      csrfProtection(req, res, next);
+      // csrfProtection(req, res, next);
     }
   });
-
-  app.use((req, res, next) => {
-    if (req.csrfToken) {
-      res.cookie('XSRF-TOKEN', req.csrfToken());
-    }
-    next();
-  });
+  // app.use((req, res, next) => {
+  //   if(req.csrfToken) {
+  //     res.cookie('XSRF-TOKEN', req.csrfToken());
+  //   }
+  //   next();
+  // })
 };

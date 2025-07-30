@@ -31,4 +31,12 @@ export default class CartController {
 
     return res.status(result.httpCode).json(result);
   }
+  public async checkout(req: Request, res: Response): Promise<any> {
+    const username = req.params.username;
+    const { products } = req.body;
+    
+    const result = await CartService.checkout(username as string, products);
+
+    return res.status(result.httpCode).json(result);
+  }
 }

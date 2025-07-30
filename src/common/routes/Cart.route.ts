@@ -7,10 +7,13 @@ import CartController from '@/modules/Cart/Cart.controller';
 const cartRoute = express.Router();
 const cartController = new CartController();
 
-cartRoute.use(AuthVerifyMiddleware);
+// cartRoute.use(AuthVerifyMiddleware);
 
 cartRoute
   .route('/:username')
   .get(cartController.getAllCart)
   .post(cartController.addProduct);
+
+cartRoute.route('/checkout/:username')
+  .post(cartController.checkout);
 export default cartRoute;
