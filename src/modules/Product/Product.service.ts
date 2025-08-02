@@ -163,7 +163,7 @@ export default class ProductService {
 
   public static async getAllProducts(
     page = 1,
-    limit = 9,
+    limit = 12,
   ): Promise<CustomResponse> {
     try {
       const skip = (page - 1) * limit;

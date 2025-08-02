@@ -1,4 +1,5 @@
 import { Response } from 'express';
+import { ERole } from '../interface/User.type';
 
 export interface Pagination {
   limit: number;
@@ -14,6 +15,9 @@ interface CustomResponse {
   data?: object & {
     accessToken?: string,
     refreshToken?: string,
+    UID?: string, 
+    username?: string,
+    roles?: ERole[]
   };
   error?: unknown;
   pagination?: Pagination;

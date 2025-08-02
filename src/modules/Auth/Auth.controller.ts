@@ -29,11 +29,17 @@ export default class AuthController {
       res.cookie('accessToken', result.data?.accessToken as string, {
         ...tokenOptions, sameSite: 'strict', maxAge: 24 * 60 * 60 * 1000
       })
-
+      const safeDataResponse = {
+        UID: result?.data?.UID,
+        username: result?.data?.username,
+        roles: result?.data?.roles
+      }
+      console.log(safeDataResponse);
       return res.status(result.httpCode).json({
         httpCode: result.httpCode,
         success: result.success,
-        message: result.message
+        message: result.message,
+        data: safeDataResponse
       })
     }
     else return res.status(result.httpCode).json(result);

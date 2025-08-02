@@ -84,7 +84,7 @@ export default class AuthService {
         httpCode: 200,
         success: true,
         message: 'USER.LOGIN.SUCCESS',
-        data: { accessToken, refreshToken }
+        data: { accessToken, refreshToken, UID: user._id, username: user.username, roles: user.roles }
       }
     } catch (error) {
       return {
