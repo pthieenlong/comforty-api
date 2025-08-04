@@ -1,6 +1,6 @@
 import CustomResponse from '@/types/custom/CustomResponse';
 import { v4 as uuidv4 } from 'uuid';
-import { CartStatus } from '@/types/interface/Cart.type';
+import { CartStatus, ICartItem } from '@/types/interface/Cart.type';
 import type ICart from './Cart.model';
 import Utils from '@/utils/utils';
 import { Cart } from './Cart.model';
@@ -82,20 +82,78 @@ export default class CartService {
     }
   }
 
+  public static async syncCart(
+    username: string,
+    products: ICartItem[],
+  ): Promise<CustomResponse> {
+    try {
+      let cart = await Cart.findOne({ username });
+      if (!cart) {
+        cart = await Cart.create({
+          _id: uuidv4(),
+          username,
+          items: [...products],
+          total: products.reduce(
+            (sum, product) => sum + product.price * product.quantity,
+            0,
+          ),
+        });
+      } else {
+        const existingItems = cart.items;
+        const newItems = products;
+
+        const existingItemMap = new Map();
+        existingItems.forEach((item) => {
+          existingItemMap.set(item.slug, item);
+        });
+
+        newItems.forEach((newItem) => {
+          const existingItem = existingItemMap.get(newItem.slug);
+
+          if (existingItem) {
+            existingItem.quantity = newItem.quantity;
+            existingItem.price = newItem.price;
+            existingItem.salePercent = newItem.salePercent;
+          } else {
+            existingItem.push(newItem);
+          }
+        });
+
+        cart.total = existingItems.reduce(
+          (sum, item) => sum + item.price * item.quantity,
+          0,
+        );
+
+        await cart.save();
+      }
+      return {
+        httpCode: 200,
+        success: true,
+        message: 'CART.SYNC.SUCESS',
+        data: cart,
+      };
+    } catch (error) {
+      console.error('Sync cart Error: ', error);
+      return {
+        httpCode: 409,
+        success: false,
+        message: 'CART.SYNC.FAIL',
+      };
+    }
+  }
+
   public static async addProduct(
     username: string,
     slug: string,
   ): Promise<CustomResponse> {
     try {
-      const cart = await Cart.findOne({ username, status: CartStatus.PENDING });
+      let cart = await Cart.findOne({ username, status: CartStatus.PENDING });
       if (!cart) {
-        return {
-          httpCode: 404,
-          success: false,
-          message: 'CART.ADD.NOT_FOUND',
-        };
+        cart = await Cart.create({
+          _id: uuidv4(),
+          username,
+        });
       }
-
       const product = await Product.findOne({ slug });
       if (!product) {
         return {
@@ -104,17 +162,14 @@ export default class CartService {
           message: 'PRODUCT.GET.NOT_FOUND',
         };
       }
-      const items = cart.products;
+      const items = cart.items;
       const itemInCart = items.find((val) => val.slug === product.slug);
       if (itemInCart) {
         itemInCart.quantity += 1;
         itemInCart.price += product.price;
 
-        cart.products[
-          items.findIndex((val) => {
-            val.slug == itemInCart.slug;
-          })
-        ] = itemInCart;
+        cart.items[items.findIndex((val) => val.slug === itemInCart.slug)] =
+          itemInCart;
 
         cart.total += product.price;
 
@@ -126,12 +181,17 @@ export default class CartService {
           message: 'CART.UPDATE.SUCCESS',
         };
       }
-      cart.products.push({
+      cart.items.push({
+        id: product.id,
         slug: product.slug,
-        name: product.title,
+        title: product.title,
         image: product.images[0],
         quantity: 1,
         price: product.price,
+        isSale: product.isSale,
+        salePercent: product.salePercent,
+        categories: product.category,
+        inStock: true,
       });
 
       cart.total += product.price;
@@ -150,24 +210,62 @@ export default class CartService {
         message: 'CART.ADD.SUCCESS',
       };
     } catch (error) {
+      console.error(error);
+
       return {
         httpCode: 404,
         success: false,
         message: 'CART.GET.FAIL',
+        error,
       };
     }
   }
 
-  public static async updateProductQuantity(
+  public static async decreaseItem(
     username: string,
     slug: string,
-    newQuantity: number,
   ): Promise<CustomResponse> {
     try {
+      let cart = await Cart.findOne({ username, status: CartStatus.PENDING });
+      if (!cart) {
+        return {
+          httpCode: 404,
+          success: false,
+          message: 'CART.GET.NOT_FOUND',
+        };
+      }
+      const product = await Product.findOne({ slug });
+      if (!product) {
+        return {
+          httpCode: 404,
+          success: false,
+          message: 'PRODUCT.GET.NOT_FOUND',
+        };
+      }
+      const items = cart.items;
+      const itemInCart = items?.find((val) => val.slug === product.slug);
+      if (itemInCart) {
+        itemInCart.quantity -= 1;
+        itemInCart.price -= product.price;
+        const itemIndex = items.findIndex(
+          (val) => val.slug === itemInCart.slug,
+        );
+        cart.items[itemIndex] = itemInCart;
+        cart.total -= product.price;
+
+        await cart.save();
+
+        return {
+          httpCode: 201,
+          success: true,
+          message: 'CART.UPDATE.SUCCESS',
+        };
+      }
+
       return {
         httpCode: 404,
         success: false,
-        message: 'CART.GET.FAIL',
+        message: 'CART.UPDATE.FAIL',
       };
     } catch (error) {
       return {
@@ -178,37 +276,79 @@ export default class CartService {
     }
   }
 
-  public static async removeProduct(
+  public static async removeItem(
     username: string,
     slug: string,
   ): Promise<CustomResponse> {
     try {
+      const cart = await Cart.findOne({ username, status: CartStatus.PENDING });
+      if (!cart) {
+        return {
+          httpCode: 404,
+          success: false,
+          message: 'CART.GET.NOT_FOUND',
+        };
+      }
+
+      const itemToRemove = cart.items.find((item) => item.slug === slug);
+
+      if (!itemToRemove) {
+        return {
+          httpCode: 404,
+          success: false,
+          message: 'ITEM.NOT_FOUND_IN_CART',
+        };
+      }
+
+      cart.items = cart.items.filter((item) => item.slug !== slug);
+      cart.total -= itemToRemove.price;
+
+      await cart.save();
+
       return {
-        httpCode: 404,
-        success: false,
-        message: 'CART.GET.FAIL',
+        httpCode: 200,
+        success: true,
+        message: 'CART.REMOVE.SUCCESS',
       };
     } catch (error) {
+      console.error('Remove product error:', error);
       return {
-        httpCode: 404,
+        httpCode: 500,
         success: false,
-        message: 'CART.GET.FAIL',
+        message: 'CART.REMOVE.FAIL',
+        error,
       };
     }
   }
 
   public static async clearCart(username: string): Promise<CustomResponse> {
     try {
+      const cart = await Cart.findOne({ username, status: CartStatus.PENDING });
+
+      if (!cart) {
+        return {
+          httpCode: 404,
+          success: false,
+          message: 'CART.GET.FAIL',
+        };
+      }
+      cart.items = [];
+      cart.total = 0;
+
+      await cart.save();
+
       return {
-        httpCode: 404,
-        success: false,
-        message: 'CART.GET.FAIL',
+        httpCode: 200,
+        success: true,
+        message: 'CART.CLEAR.SUCCESS',
       };
     } catch (error) {
+      console.error('Clear cart error:', error);
       return {
-        httpCode: 404,
+        httpCode: 500,
         success: false,
-        message: 'CART.GET.FAIL',
+        message: 'CART.CLEAR.FAIL',
+        error,
       };
     }
   }

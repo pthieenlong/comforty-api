@@ -1,18 +1,10 @@
 import mongoose, { Document, Schema } from 'mongoose';
-import { CartStatus } from '@/types/interface/Cart.type';
+import { CartStatus, ICartItem } from '@/types/interface/Cart.type';
 
 export default interface ICart extends Document {
   _id: string;
   username: string;
-  products: [
-    {
-      slug: string;
-      name: string;
-      image: string;
-      quantity: number;
-      price: number;
-    },
-  ];
+  items: ICartItem[];
   total: number;
   status: CartStatus;
   createdAt: Date;
@@ -27,32 +19,8 @@ const CartSchema: Schema = new Schema<ICart>({
     type: String,
     required: true,
   },
-  products: {
-    type: [
-      {
-        slug: {
-          type: String,
-          required: true,
-        },
-        name: {
-          type: String,
-          required: true,
-        },
-        image: {
-          type: String,
-        },
-        quantity: {
-          type: Number,
-          required: true,
-          default: 1,
-          min: 1,
-        },
-        price: {
-          type: Number,
-          required: true,
-        },
-      },
-    ],
+  items: {
+    type: [],
     required: false,
     default: [],
   },

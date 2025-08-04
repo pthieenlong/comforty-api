@@ -9,11 +9,12 @@ const cartController = new CartController();
 
 // cartRoute.use(AuthVerifyMiddleware);
 
+cartRoute.route('/:username').get(cartController.getCartByUser);
+cartRoute.route('/:username/sync').post(cartController.syncCart);
 cartRoute
-  .route('/:username')
-  .get(cartController.getAllCart)
-  .post(cartController.addProduct);
-
-cartRoute.route('/checkout/:username')
-  .post(cartController.checkout);
+  .route('/:username/product')
+  .post(cartController.addProduct)
+  .patch(cartController.decreaseItem)
+  .delete(cartController.removeItem);
+cartRoute.route('/:username/checkout').post(cartController.checkout);
 export default cartRoute;
