@@ -4,7 +4,18 @@ import Utils from '@/utils/utils';
 import { Product } from './Product.model';
 import { v4 as uuidv4 } from 'uuid';
 
+interface IShortProductResponse {
+  id: string;
+  slug: string;
+  title: string;
+  image: string;
+  categories: string[];
+  price: number;
+  isSale: boolean;
+  salePercent: number;
+}
 export default class ProductService {
+  
   public static async getProductBySlug(slug: string): Promise<CustomResponse> {
     try {
       const product = await Product.findOne({ slug });
@@ -41,11 +52,21 @@ export default class ProductService {
         foreignField: categorySlug,
         justOne: true,
       });
+      const response: IShortProductResponse[] = products.map(product => ({
+        id: product._id, 
+        slug: product.slug,
+        title: product.title,
+        image: product.images[0],
+        categories: product.category,
+        price: product.price,
+        isSale: product.isSale,
+        salePercent: product.salePercent,
+      }))
       return {
         httpCode: 200,
         success: true,
         message: 'PRODUCT.GET.SUCCESS',
-        data: products,
+        data: response,
       };
     } catch (error) {
       return {
@@ -102,11 +123,21 @@ export default class ProductService {
   public static async getBestProducts(): Promise<CustomResponse> {
     try {
       const products = await Product.find().sort({ rating: -1 }).limit(8);
+      const response: IShortProductResponse[] = products.map(product => ({
+        id: product._id, 
+        slug: product.slug,
+        title: product.title,
+        image: product.images[0],
+        categories: product.category,
+        price: product.price,
+        isSale: product.isSale,
+        salePercent: product.salePercent,
+      }))
       return {
         httpCode: 200,
         success: true,
         message: 'PRODUCT.GET.SUCCESS',
-        data: products,
+        data: response,
       };
     } catch (error) {
       return {
@@ -123,11 +154,21 @@ export default class ProductService {
   ): Promise<CustomResponse> {
     try {
       const products = await Product.find().limit(parseInt(limit));
+      const response: IShortProductResponse[] = products.map(product => ({
+        id: product._id, 
+        slug: product.slug,
+        title: product.title,
+        image: product.images[0],
+        categories: product.category,
+        price: product.price,
+        isSale: product.isSale,
+        salePercent: product.salePercent,
+      }))
       return {
         httpCode: 200,
         success: true,
         message: 'PRODUCT.GET.SUCCESS',
-        data: products,
+        data: response,
       };
     } catch (error) {
       return {
@@ -146,11 +187,21 @@ export default class ProductService {
           updatedAt: -1,
         })
         .limit(8);
+      const response: IShortProductResponse[] = products.map(product => ({
+        id: product._id, 
+        slug: product.slug,
+        title: product.title,
+        image: product.images[0],
+        categories: product.category,
+        price: product.price,
+        isSale: product.isSale,
+        salePercent: product.salePercent,
+      }))
       return {
         httpCode: 200,
         success: true,
         message: 'PRODUCT.GET.SUCCESS',
-        data: products,
+        data: response,
       };
     } catch (error) {
       return {
@@ -172,11 +223,21 @@ export default class ProductService {
         .skip(skip)
         .limit(limit);
       const totalItems = await Product.countDocuments();
+      const response: IShortProductResponse[] = products.map(product => ({
+        id: product._id, 
+        slug: product.slug,
+        title: product.title,
+        image: product.images[0],
+        categories: product.category,
+        price: product.price,
+        isSale: product.isSale,
+        salePercent: product.salePercent,
+      }))
       return {
         httpCode: 200,
         success: true,
         message: 'PRODUCTS.GET.SUCCESS',
-        data: [...products],
+        data: [...response],
         pagination: {
           limit,
           page,
@@ -200,8 +261,6 @@ export default class ProductService {
     try {
       const $regex = new RegExp(query, 'i');
       const products = await Product.find({ title: $regex });
-      console.log(products);
-
       if (products.length < 0) {
         return {
           httpCode: 404,
