@@ -1,6 +1,8 @@
 export enum CartStatus {
   PENDING = 'PENDING',
   PAID = 'PAID',
+  SHIPPING = 'SHIPPING',
+  COMPLETED = "COMPLETED"
 }
 
 export interface ICartItem {

@@ -6,10 +6,8 @@ import { canRead, canUpdate } from '../middlewares/casl.middleware';
 const userRoute = express.Router();
 const userController = new UserController();
 
-userRoute.use(AuthVerifyMiddleware);
-
 userRoute
   .route('/:username')
-  .get(canRead('User'), canUpdate('User'), userController.getUser);
+  .get(userController.getUser);
 
 export default userRoute;

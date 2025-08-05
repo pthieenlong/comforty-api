@@ -9,7 +9,8 @@ export class UserService {
         username: userSchema?.username,
         email: userSchema?.email,
         phone: userSchema?.phone,
-        avatar: userSchema?.avatar
+        avatar: userSchema?.avatar,
+        fullname: userSchema?.fullname,
       }
       return {
         httpCode: 200,

@@ -16,5 +16,4 @@ cartRoute
   .post(cartController.addProduct)
   .patch(cartController.decreaseItem)
   .delete(cartController.removeItem);
-cartRoute.route('/:username/checkout').post(cartController.checkout);
 export default cartRoute;

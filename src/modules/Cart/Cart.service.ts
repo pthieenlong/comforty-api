@@ -1,8 +1,6 @@
 import CustomResponse from '@/types/custom/CustomResponse';
 import { v4 as uuidv4 } from 'uuid';
 import { CartStatus, ICartItem } from '@/types/interface/Cart.type';
-import type ICart from './Cart.model';
-import Utils from '@/utils/utils';
 import { Cart } from './Cart.model';
 import { Product } from '../Product/Product.model';
 export default class CartService {
@@ -24,7 +22,7 @@ export default class CartService {
         httpCode: 200,
         success: true,
         message: 'CART.GET.SUCESS',
-        data: [carts],
+        data: carts,
       };
     } catch (error) {
       return {
@@ -106,16 +104,19 @@ export default class CartService {
         existingItems.forEach((item) => {
           existingItemMap.set(item.slug, item);
         });
-
+        console.log(newItems);
+        
         newItems.forEach((newItem) => {
           const existingItem = existingItemMap.get(newItem.slug);
-
+          console.log("Existing Item: ", existingItem);
+          console.log('newItem: ', newItem);
+          
           if (existingItem) {
             existingItem.quantity = newItem.quantity;
             existingItem.price = newItem.price;
             existingItem.salePercent = newItem.salePercent;
           } else {
-            existingItem.push(newItem);
+            existingItems.push(newItem);
           }
         });
 
@@ -372,43 +373,4 @@ export default class CartService {
     }
   }
 
-  public static async checkout(
-    username: string,
-    products: any,
-  ): Promise<CustomResponse> {
-    try {
-      const result = await Cart.create({
-        _id: uuidv4(),
-        username,
-        status: CartStatus.PAID,
-        products,
-      });
-      console.log(result);
-
-      if (result) {
-        await Cart.create({
-          _id: uuidv4(),
-          username,
-        });
-        return {
-          httpCode: 201,
-          success: true,
-          message: 'CART.CHECKOUT.SUCCESS',
-        };
-      } else {
-        return {
-          httpCode: 409,
-          success: false,
-          message: 'CART.CHECKOUT.CONFLICT',
-        };
-      }
-    } catch (error) {
-      console.log('error:', error);
-      return {
-        httpCode: 409,
-        success: false,
-        message: 'CART.CHECKOUT.CONFLICTs',
-      };
-    }
-  }
 }

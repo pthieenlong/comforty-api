@@ -13,6 +13,8 @@ interface IShortProductResponse {
   price: number;
   isSale: boolean;
   salePercent: number;
+  isVisible: boolean;
+  createdAt: Date;
 }
 export default class ProductService {
   
@@ -61,6 +63,8 @@ export default class ProductService {
         price: product.price,
         isSale: product.isSale,
         salePercent: product.salePercent,
+        isVisible: product.isVisible,
+        createdAt: product.createdAt
       }))
       return {
         httpCode: 200,
@@ -132,6 +136,8 @@ export default class ProductService {
         price: product.price,
         isSale: product.isSale,
         salePercent: product.salePercent,
+        isVisible: product.isVisible,
+        createdAt: product.createdAt
       }))
       return {
         httpCode: 200,
@@ -163,6 +169,8 @@ export default class ProductService {
         price: product.price,
         isSale: product.isSale,
         salePercent: product.salePercent,
+        isVisible: product.isVisible,
+        createdAt: product.createdAt
       }))
       return {
         httpCode: 200,
@@ -196,6 +204,8 @@ export default class ProductService {
         price: product.price,
         isSale: product.isSale,
         salePercent: product.salePercent,
+        isVisible: product.isVisible,
+        createdAt: product.createdAt
       }))
       return {
         httpCode: 200,
@@ -232,6 +242,8 @@ export default class ProductService {
         price: product.price,
         isSale: product.isSale,
         salePercent: product.salePercent,
+        isVisible: product.isVisible,
+        createdAt: product.createdAt
       }))
       return {
         httpCode: 200,

@@ -9,12 +9,7 @@ export interface IUser extends Document {
   fullname: string;
   password: string;
   phone: string;
-  description: string;
   avatar: string;
-  school: {
-    schoolID: string;
-    schoolName: string;
-  };
   isVerified: EVerify,
   token: {
     refreshToken: string,
@@ -53,18 +48,9 @@ const UserSchema: Schema = new Schema<IUser>(
     phone: {
       type: String,
     },
-    description: {
-      type: String,
-    },
     avatar: {
       type: String,
       default: ''
-    },
-    school: {
-      type: {
-        schoolID: String,
-        schoolName: String
-      },
     },
     isVerified: {
       type: Number,
