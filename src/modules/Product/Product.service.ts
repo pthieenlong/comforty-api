@@ -1,5 +1,5 @@
 import CustomResponse from '@/types/custom/CustomResponse';
-import { CreateProductDTO } from './Product.dto';
+import { CreateProductDTO, UpdateProductDTO } from './Product.dto';
 import Utils from '@/utils/utils';
 import { Product } from './Product.model';
 import { v4 as uuidv4 } from 'uuid';
@@ -17,7 +17,6 @@ interface IShortProductResponse {
   createdAt: Date;
 }
 export default class ProductService {
-  
   public static async getProductBySlug(slug: string): Promise<CustomResponse> {
     try {
       const product = await Product.findOne({ slug });
@@ -54,8 +53,8 @@ export default class ProductService {
         foreignField: categorySlug,
         justOne: true,
       });
-      const response: IShortProductResponse[] = products.map(product => ({
-        id: product._id, 
+      const response: IShortProductResponse[] = products.map((product) => ({
+        id: product._id,
         slug: product.slug,
         title: product.title,
         image: product.images[0],
@@ -64,8 +63,8 @@ export default class ProductService {
         isSale: product.isSale,
         salePercent: product.salePercent,
         isVisible: product.isVisible,
-        createdAt: product.createdAt
-      }))
+        createdAt: product.createdAt,
+      }));
       return {
         httpCode: 200,
         success: true,
@@ -127,8 +126,8 @@ export default class ProductService {
   public static async getBestProducts(): Promise<CustomResponse> {
     try {
       const products = await Product.find().sort({ rating: -1 }).limit(8);
-      const response: IShortProductResponse[] = products.map(product => ({
-        id: product._id, 
+      const response: IShortProductResponse[] = products.map((product) => ({
+        id: product._id,
         slug: product.slug,
         title: product.title,
         image: product.images[0],
@@ -137,8 +136,8 @@ export default class ProductService {
         isSale: product.isSale,
         salePercent: product.salePercent,
         isVisible: product.isVisible,
-        createdAt: product.createdAt
-      }))
+        createdAt: product.createdAt,
+      }));
       return {
         httpCode: 200,
         success: true,
@@ -160,8 +159,8 @@ export default class ProductService {
   ): Promise<CustomResponse> {
     try {
       const products = await Product.find().limit(parseInt(limit));
-      const response: IShortProductResponse[] = products.map(product => ({
-        id: product._id, 
+      const response: IShortProductResponse[] = products.map((product) => ({
+        id: product._id,
         slug: product.slug,
         title: product.title,
         image: product.images[0],
@@ -170,8 +169,8 @@ export default class ProductService {
         isSale: product.isSale,
         salePercent: product.salePercent,
         isVisible: product.isVisible,
-        createdAt: product.createdAt
-      }))
+        createdAt: product.createdAt,
+      }));
       return {
         httpCode: 200,
         success: true,
@@ -195,8 +194,8 @@ export default class ProductService {
           updatedAt: -1,
         })
         .limit(8);
-      const response: IShortProductResponse[] = products.map(product => ({
-        id: product._id, 
+      const response: IShortProductResponse[] = products.map((product) => ({
+        id: product._id,
         slug: product.slug,
         title: product.title,
         image: product.images[0],
@@ -205,8 +204,8 @@ export default class ProductService {
         isSale: product.isSale,
         salePercent: product.salePercent,
         isVisible: product.isVisible,
-        createdAt: product.createdAt
-      }))
+        createdAt: product.createdAt,
+      }));
       return {
         httpCode: 200,
         success: true,
@@ -228,13 +227,10 @@ export default class ProductService {
   ): Promise<CustomResponse> {
     try {
       const skip = (page - 1) * limit;
-      const products = await Product.find()
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(limit);
+      const products = await Product.find().sort({ createdAt: -1 });
       const totalItems = await Product.countDocuments();
-      const response: IShortProductResponse[] = products.map(product => ({
-        id: product._id, 
+      const response: IShortProductResponse[] = products.map((product) => ({
+        id: product._id,
         slug: product.slug,
         title: product.title,
         image: product.images[0],
@@ -243,19 +239,13 @@ export default class ProductService {
         isSale: product.isSale,
         salePercent: product.salePercent,
         isVisible: product.isVisible,
-        createdAt: product.createdAt
-      }))
+        createdAt: product.createdAt,
+      }));
       return {
         httpCode: 200,
         success: true,
         message: 'PRODUCTS.GET.SUCCESS',
         data: [...response],
-        pagination: {
-          limit,
-          page,
-          totalPage: Math.ceil(totalItems / limit),
-          totalItems,
-        },
       };
     } catch (error) {
       return {
@@ -292,6 +282,103 @@ export default class ProductService {
         httpCode: 409,
         message: 'PRODUCTS.GET.CONFLICT',
         success: false,
+        error,
+      };
+    }
+  }
+  public static async updateProductBySlug(
+    slug: string,
+    productInput: Partial<UpdateProductDTO>,
+  ): Promise<CustomResponse> {
+    try {
+      const product = await Product.findOne({ slug });
+
+      if (product) {
+        Object.assign(product, productInput);
+        product.updatedAt = new Date();
+        await product.save();
+        return {
+          httpCode: 200,
+          success: true,
+          message: 'PRODUCT.UPDATE.SUCCCESS',
+          data: product,
+        };
+      }
+      return {
+        httpCode: 404,
+        success: false,
+        message: 'PRODUCT.GET.FAIL',
+      };
+    } catch (error) {
+      console.log(error);
+      return {
+        httpCode: 409,
+        success: false,
+        message: 'PRODUCT.UPDATE.FAIL',
+        error,
+      };
+    }
+  }
+  public static async updateProductSale(slug: string): Promise<CustomResponse> {
+    try {
+      const product = await Product.findOneAndUpdate(
+        { slug },
+        [{ $set: { isSale: { $not: '$isSale' } } }],
+        { new: true },
+      );
+      if (!product) {
+        return {
+          httpCode: 404,
+          success: false,
+          message: 'PRODUCT.GET.FAIL',
+        };
+      }
+
+      return {
+        httpCode: 200,
+        success: true,
+        message: 'PRODUCT.UPDATE.SUCCCESS',
+        data: product,
+      };
+    } catch (error) {
+      console.log(error);
+
+      return {
+        httpCode: 409,
+        success: false,
+        message: 'PRODUCT.UPDATE.FAIL',
+        error,
+      };
+    }
+  }
+  public static async updateProductVisible(slug: string) {
+    try {
+      const product = await Product.findOneAndUpdate(
+        { slug },
+        [{ $set: { isVisible: { $not: '$isVisible' } } }],
+        { new: true },
+      );
+      if (!product) {
+        return {
+          httpCode: 404,
+          success: false,
+          message: 'PRODUCT.GET.FAIL',
+        };
+      }
+
+      return {
+        httpCode: 200,
+        success: true,
+        message: 'PRODUCT.UPDATE.SUCCCESS',
+        data: product,
+      };
+    } catch (error) {
+      console.log(error);
+
+      return {
+        httpCode: 409,
+        success: false,
+        message: 'PRODUCT.UPDATE.FAIL',
         error,
       };
     }

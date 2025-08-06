@@ -21,18 +21,43 @@ export class CreateProductDTO {
   @IsArray()
   @IsString({ each: true })
   images: string[];
+}
+export class UpdateProductDTO {
+  @IsOptional()
+  @IsString()
+  title: string;
+
+  @IsOptional()
+  @IsNumber()
+  price: number;
 
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
-  colors: string[];
+  categories: string[];
 
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
-  sizes: string[];
+  images: string[];
+
+  @IsOptional()
+  @IsBoolean()
+  isSale: boolean;
 
   @IsOptional()
   @IsBoolean()
   isVisible: boolean;
+
+  @IsOptional()
+  @IsNumber()
+  salePercent: number;
+
+  @IsOptional()
+  @IsString()
+  shortDesc: string;
+
+  @IsOptional()
+  @IsString()
+  longDesc: string;
 }

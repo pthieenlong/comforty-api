@@ -105,12 +105,10 @@ export default class CartService {
           existingItemMap.set(item.slug, item);
         });
         console.log(newItems);
-        
+
         newItems.forEach((newItem) => {
           const existingItem = existingItemMap.get(newItem.slug);
-          console.log("Existing Item: ", existingItem);
-          console.log('newItem: ', newItem);
-          
+
           if (existingItem) {
             existingItem.quantity = newItem.quantity;
             existingItem.price = newItem.price;
@@ -372,5 +370,4 @@ export default class CartService {
       };
     }
   }
-
 }
