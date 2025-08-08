@@ -1,18 +1,30 @@
-import { IsString, IsEmail, MinLength, Matches, IsStrongPassword } from 'class-validator';
+import {
+  IsString,
+  IsEmail,
+  MinLength,
+  Matches,
+  IsStrongPassword,
+  IsNotEmpty,
+} from 'class-validator';
 import { Match } from '@decorators/match.decorator';
 
 export class RegisterDTO {
   @IsString()
   @MinLength(8)
   username: string;
-  
+
   @IsString()
-  @IsStrongPassword({ minLength: 8, minUppercase: 1, minNumbers: 1, minSymbols: 1})
+  @IsStrongPassword({
+    minLength: 8,
+    minUppercase: 1,
+    minNumbers: 1,
+    minSymbols: 1,
+  })
   password: string;
 
   @IsString()
   @Match('password', {
-    message: "Password is not match"
+    message: 'Password is not match',
   })
   confirmPassword: string;
 
@@ -22,9 +34,15 @@ export class RegisterDTO {
 
 export class LoginDTO {
   @IsString()
-  username: string
+  username: string;
 
   @IsString()
   @MinLength(8)
-  password: string
+  password: string;
+}
+
+export class ResendVerificationDTO {
+  @IsEmail()
+  @IsNotEmpty()
+  email: string;
 }

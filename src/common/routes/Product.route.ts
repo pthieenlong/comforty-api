@@ -24,6 +24,7 @@ productRoute.route('/limit').get(productController.getProductsByLimit);
 productRoute.route('/best').get(productController.getBestProducts);
 
 productRoute.route('/new').get(productController.getNewProducts);
+productRoute.route('/sale').get(productController.getSaleProducts);
 
 productRoute
   .route('/:slug')

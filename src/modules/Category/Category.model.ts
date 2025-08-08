@@ -1,13 +1,13 @@
-import mongoose, { Document, Schema } from "mongoose";
+import mongoose, { Document, Schema } from 'mongoose';
 
 export default interface ICategory extends Document {
-  _id: string,
-  name: string,
-  slug: string,
-  isVisible: boolean,
+  _id: string;
+  name: string;
+  slug: string;
+  isVisible: boolean;
 }
 
-const CategorySchema:Schema = new Schema<ICategory>({
+const CategorySchema: Schema = new Schema<ICategory>({
   _id: {
     type: String,
     required: true,
@@ -23,6 +23,6 @@ const CategorySchema:Schema = new Schema<ICategory>({
   isVisible: {
     type: Boolean,
     default: true,
-  }
-})
+  },
+});
 export const Category = mongoose.model<ICategory>('Category', CategorySchema);

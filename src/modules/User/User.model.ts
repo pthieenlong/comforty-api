@@ -5,16 +5,17 @@ export interface IUser extends Document {
   _id: string;
   roles: ERole[];
   username: string;
+  password: string;
   email: string;
   fullname: string;
-  password: string;
   phone: string;
+  address: string;
   avatar: string;
-  isVerified: EVerify,
+  isVerified: EVerify;
   token: {
-    refreshToken: string,
-    accessToken: string
-  }
+    refreshToken: string;
+    accessToken: string;
+  };
   createdAt: Date;
 }
 
@@ -28,19 +29,19 @@ const UserSchema: Schema = new Schema<IUser>(
       type: [String],
       enum: Object.values(ERole),
       required: true,
-      default: [ERole.USER]
+      default: [ERole.USER],
     },
     username: {
       type: String,
-      required: true
+      required: true,
     },
     email: {
       type: String,
-      required: true
+      required: true,
     },
     password: {
       type: String,
-      required: true
+      required: true,
     },
     fullname: {
       type: String,
@@ -48,24 +49,27 @@ const UserSchema: Schema = new Schema<IUser>(
     phone: {
       type: String,
     },
+    address: {
+      type: String,
+    },
     avatar: {
       type: String,
-      default: ''
+      default: '',
     },
     isVerified: {
       type: Number,
-      default: EVerify.UNVERIFIED
+      default: EVerify.UNVERIFIED,
     },
     token: {
       type: {
         refreshToken: String,
-        accessToken: String
+        accessToken: String,
       },
     },
     createdAt: {
       type: Date,
-      default: Date.now()
-    } 
+      default: Date.now(),
+    },
   },
   {
     versionKey: false,

@@ -3,6 +3,7 @@ import { CreateProductDTO, UpdateProductDTO } from './Product.dto';
 import Utils from '@/utils/utils';
 import { Product } from './Product.model';
 import { v4 as uuidv4 } from 'uuid';
+import { Category } from '../Category/Category.model';
 
 interface IShortProductResponse {
   id: string;
@@ -125,13 +126,38 @@ export default class ProductService {
 
   public static async getBestProducts(): Promise<CustomResponse> {
     try {
-      const products = await Product.find().sort({ rating: -1 }).limit(8);
+      const products = await Product.aggregate([
+        {
+          $lookup: {
+            from: 'categories',
+            localField: 'category',
+            foreignField: 'slug',
+            as: 'categoryDetails',
+          },
+        },
+        {
+          $addFields: {
+            categoryNames: '$categoryDetails.name',
+          },
+        },
+        {
+          $project: {
+            categoryDetails: 0,
+          },
+        },
+        {
+          $sort: { createdAt: -1 },
+        },
+        {
+          $limit: 8,
+        },
+      ]);
       const response: IShortProductResponse[] = products.map((product) => ({
         id: product._id,
         slug: product.slug,
         title: product.title,
         image: product.images[0],
-        categories: product.category,
+        categories: product.categoryNames,
         price: product.price,
         isSale: product.isSale,
         salePercent: product.salePercent,
@@ -158,7 +184,32 @@ export default class ProductService {
     limit: string,
   ): Promise<CustomResponse> {
     try {
-      const products = await Product.find().limit(parseInt(limit));
+      const products = await Product.aggregate([
+        {
+          $lookup: {
+            from: 'categories',
+            localField: 'category',
+            foreignField: 'slug',
+            as: 'categoryDetails',
+          },
+        },
+        {
+          $addFields: {
+            categoryNames: '$categoryDetails.name',
+          },
+        },
+        {
+          $project: {
+            categoryDetails: 0,
+          },
+        },
+        {
+          $sort: { createdAt: -1 },
+        },
+        {
+          $limit: 8,
+        },
+      ]);
       const response: IShortProductResponse[] = products.map((product) => ({
         id: product._id,
         slug: product.slug,
@@ -188,12 +239,92 @@ export default class ProductService {
 
   public static async getNewProducts(limit: string): Promise<CustomResponse> {
     try {
-      const products = await Product.find()
-        .sort({
-          createdAt: -1,
-          updatedAt: -1,
-        })
-        .limit(8);
+      const products = await Product.aggregate([
+        {
+          $lookup: {
+            from: 'categories',
+            localField: 'category',
+            foreignField: 'slug',
+            as: 'categoryDetails',
+          },
+        },
+        {
+          $addFields: {
+            categoryNames: '$categoryDetails.name',
+          },
+        },
+        {
+          $project: {
+            categoryDetails: 0,
+          },
+        },
+        {
+          $sort: { createdAt: -1, updateAt: -1 },
+        },
+        {
+          $limit: 8,
+        },
+      ]);
+      const response: IShortProductResponse[] = products.map((product) => ({
+        id: product._id,
+        slug: product.slug,
+        title: product.title,
+        image: product.images[0],
+        categories: product.category,
+        price: product.price,
+        isSale: product.isSale,
+        salePercent: product.salePercent,
+        isVisible: product.isVisible,
+        createdAt: product.createdAt,
+      }));
+      return {
+        httpCode: 200,
+        success: true,
+        message: 'PRODUCT.GET.SUCCESS',
+        data: response,
+      };
+    } catch (error) {
+      return {
+        httpCode: 409,
+        success: false,
+        message: 'PRODUCT.GET.FAIL',
+      };
+    }
+  }
+
+  public static async getSaleProducts(): Promise<CustomResponse> {
+    try {
+      const products = await Product.aggregate([
+        {
+          $match: {
+            isSale: true,
+          },
+        },
+        {
+          $lookup: {
+            from: 'categories',
+            localField: 'category',
+            foreignField: 'slug',
+            as: 'categoryDetails',
+          },
+        },
+        {
+          $addFields: {
+            categoryNames: '$categoryDetails.name',
+          },
+        },
+        {
+          $project: {
+            categoryDetails: 0,
+          },
+        },
+        {
+          $sort: { createdAt: -1 },
+        },
+        {
+          $limit: 8,
+        },
+      ]);
       const response: IShortProductResponse[] = products.map((product) => ({
         id: product._id,
         slug: product.slug,
@@ -226,9 +357,11 @@ export default class ProductService {
     limit = 12,
   ): Promise<CustomResponse> {
     try {
-      const skip = (page - 1) * limit;
-      const products = await Product.find().sort({ createdAt: -1 });
-      const totalItems = await Product.countDocuments();
+      const products = await Product.find().sort({ createdAt: -1 }).populate({
+        path: 'category',
+        model: 'Category',
+        select: 'name',
+      });
       const response: IShortProductResponse[] = products.map((product) => ({
         id: product._id,
         slug: product.slug,
@@ -291,23 +424,30 @@ export default class ProductService {
     productInput: Partial<UpdateProductDTO>,
   ): Promise<CustomResponse> {
     try {
-      const product = await Product.findOne({ slug });
+      const product = await Product.findOneAndUpdate(
+        { slug },
+        {
+          ...productInput,
+          updatedAt: new Date(),
+        },
+        {
+          new: true, // Return document sau khi update
+          runValidators: true, // Chạy schema validators
+        },
+      );
 
-      if (product) {
-        Object.assign(product, productInput);
-        product.updatedAt = new Date();
-        await product.save();
+      if (!product) {
         return {
-          httpCode: 200,
-          success: true,
-          message: 'PRODUCT.UPDATE.SUCCCESS',
-          data: product,
+          httpCode: 404,
+          success: false,
+          message: 'PRODUCT.GET.FAIL',
         };
       }
       return {
-        httpCode: 404,
-        success: false,
-        message: 'PRODUCT.GET.FAIL',
+        httpCode: 200,
+        success: true,
+        message: 'PRODUCT.UPDATE.SUCCESS',
+        data: product,
       };
     } catch (error) {
       console.log(error);

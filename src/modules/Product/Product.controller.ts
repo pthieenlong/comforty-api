@@ -43,11 +43,15 @@ export default class ProductController {
   }
 
   public async getProductsByLimit(req: Request, res: Response): Promise<any> {
-    const results = await ProductService.getProductsByLimit('4');
+    const results = await ProductService.getProductsByLimit('8');
     return res.status(results.httpCode).json(results);
   }
   public async getNewProducts(req: Request, res: Response): Promise<any> {
     const results = await ProductService.getNewProducts('4');
+    return res.status(results.httpCode).json(results);
+  }
+  public async getSaleProducts(req: Request, res: Response): Promise<any> {
+    const results = await ProductService.getSaleProducts();
     return res.status(results.httpCode).json(results);
   }
   public async getSearchProducts(req: Request, res: Response): Promise<any> {

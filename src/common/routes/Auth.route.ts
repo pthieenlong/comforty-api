@@ -1,20 +1,30 @@
 import AuthController from '@/modules/Auth/Auth.controller';
-import express, { Response, Request, response, request, NextFunction } from 'express';
+import express, {
+  Response,
+  Request,
+  response,
+  request,
+  NextFunction,
+} from 'express';
 import AuthVerifyMiddleware from '../middlewares/AuthVerify.middleware';
 import { canUpdate } from '../middlewares/casl.middleware';
 
 const authRoute = express.Router();
-const authController = new AuthController()
-authRoute
-  .route('/register')
-  .post(authController.register)
+const authController = new AuthController();
 
-authRoute
-  .route('/login')
-  .post(authController.login);
+authRoute.route('/register').post(authController.register);
 
+authRoute.route('/login').post(authController.login);
 
 authRoute
   .route('/token')
-  .post(canUpdate('User'),authController.getAccessToken)
+  .post(canUpdate('User'), authController.getAccessToken);
+
+// Thêm routes cho email verification
+authRoute.route('/verify-email').post(authController.verifyEmail);
+
+authRoute
+  .route('/resend-verification')
+  .post(authController.resendVerificationEmail);
+
 export default authRoute;
