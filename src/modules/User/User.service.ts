@@ -11,12 +11,15 @@ export class UserService {
         phone: userSchema?.phone,
         avatar: userSchema?.avatar,
         fullname: userSchema?.fullname,
-      }
+        address: userSchema?.address,
+        isVerified: userSchema?.isVerified,
+        createdAt: userSchema?.createdAt,
+      };
       return {
         httpCode: 200,
         success: true,
         message: 'USER.GET.SUCCESS',
-        data
+        data,
       };
     } catch (error) {
       return {
@@ -47,5 +50,12 @@ export class UserService {
         message: 'USER.GET.FAIL',
       };
     }
+  }
+  public static async updateUserInformations(): Promise<CustomResponse> {
+    return {
+      httpCode: 409,
+      success: false,
+      message: 'USER.GET.FAIL',
+    };
   }
 }
