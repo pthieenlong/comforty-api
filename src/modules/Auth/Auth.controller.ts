@@ -1,6 +1,12 @@
 import { Request, Response } from 'express';
 import { ValidateRequest } from '@/common/decorators/validation.decorator';
-import { LoginDTO, RegisterDTO } from './Auth.dto';
+import {
+  ForgotPasswordDTO,
+  LoginDTO,
+  RegisterDTO,
+  ResetPasswordDTO,
+  UpdatePasswordDTO,
+} from './Auth.dto';
 import CustomResponse from '@/types/custom/CustomResponse';
 import AuthService from './Auth.service';
 import { configModule } from '@/common/config/config.module';
@@ -71,7 +77,6 @@ export default class AuthController {
     return res.status(result.httpCode).json({ result });
   }
 
-  // Thêm method verify email
   public async verifyEmail(req: Request, res: Response): Promise<any> {
     try {
       const { token } = req.body;
@@ -94,7 +99,6 @@ export default class AuthController {
     }
   }
 
-  // Thêm method resend verification email
   public async resendVerificationEmail(
     req: Request,
     res: Response,
@@ -118,5 +122,27 @@ export default class AuthController {
         error,
       });
     }
+  }
+
+  @ValidateRequest(ForgotPasswordDTO)
+  public async forgotPassword(req: Request, res: Response): Promise<any> {
+    const input = req.body;
+    const result = await AuthService.forgotPassword(input);
+    return res.status(result.httpCode).json(result);
+  }
+
+  @ValidateRequest(ResetPasswordDTO)
+  public async resetPassword(req: Request, res: Response): Promise<any> {
+    const input = req.body;
+    const result = await AuthService.resetPassword(input);
+    return res.status(result.httpCode).json(result);
+  }
+
+  @ValidateRequest(UpdatePasswordDTO)
+  public async updatePassword(req: Request, res: Response): Promise<any> {
+    const input = req.body;
+    const { username } = req.params;
+    const result = await AuthService.updatePassword(username, input);
+    return res.status(result.httpCode).json(result);
   }
 }

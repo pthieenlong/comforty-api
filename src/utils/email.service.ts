@@ -3,10 +3,10 @@ import { configModule } from '@/common/config/config.module';
 
 export class EmailService {
   private static transporter = nodemailer.createTransport({
-    service: 'gmail', // Hoặc service khác
+    service: 'gmail',
     auth: {
-      user: configModule.getEmailUser(), // Email của bạn
-      pass: configModule.getEmailPassword(), // App password
+      user: configModule.getEmailUser(),
+      pass: configModule.getEmailPassword(),
     },
   });
 

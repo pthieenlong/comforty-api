@@ -20,11 +20,15 @@ authRoute
   .route('/token')
   .post(canUpdate('User'), authController.getAccessToken);
 
-// Thêm routes cho email verification
 authRoute.route('/verify-email').post(authController.verifyEmail);
 
 authRoute
   .route('/resend-verification')
   .post(authController.resendVerificationEmail);
 
+authRoute.route('/forgot-password').post(authController.forgotPassword);
+authRoute.route('/reset-password').post(authController.resetPassword);
+authRoute
+  .route('/:username/update-password')
+  .patch(authController.updatePassword);
 export default authRoute;

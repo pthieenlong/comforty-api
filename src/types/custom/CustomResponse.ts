@@ -13,11 +13,11 @@ interface CustomResponse {
   success: boolean;
   message: string;
   data?: object & {
-    accessToken?: string,
-    refreshToken?: string,
-    UID?: string, 
-    username?: string,
-    roles?: ERole[]
+    accessToken?: string;
+    refreshToken?: string;
+    UID?: string;
+    username?: string;
+    roles?: ERole[];
   };
   error?: unknown;
   pagination?: Pagination;

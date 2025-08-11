@@ -51,19 +51,42 @@ export class UserService {
       };
     }
   }
-  public static async updateUserInformations(input: UserUpdateDTO): Promise<CustomResponse> {
+  public static async updateUserInformations(
+    username: string,
+    input: UserUpdateDTO,
+  ): Promise<CustomResponse> {
     try {
-      return {
-        httpCode: 409,
-        success: false,
-        message: 'USER.GET.FAIL',
-      };
+      const result = await User.findOneAndUpdate(
+        {
+          username,
+        },
+        {
+          ...input,
+        },
+        {
+          new: true,
+        },
+      );
+
+      if (result)
+        return {
+          httpCode: 200,
+          success: true,
+          message: 'USER.UPDATE.SUCCESS',
+        };
+      else {
+        return {
+          httpCode: 404,
+          success: false,
+          message: 'USER.UPDATE.NOT_FOUND',
+        };
+      }
     } catch (error) {
       return {
         httpCode: 409,
         success: false,
         message: 'USER.UPDATE.CONFLICT',
-        error: error
+        error,
       };
     }
   }

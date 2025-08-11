@@ -46,3 +46,54 @@ export class ResendVerificationDTO {
   @IsNotEmpty()
   email: string;
 }
+
+export class ForgotPasswordDTO {
+  @IsEmail()
+  @IsNotEmpty()
+  email: string;
+
+  @IsString()
+  @IsNotEmpty()
+  username: string;
+}
+
+export class ResetPasswordDTO {
+  @IsString()
+  @IsNotEmpty()
+  token: string;
+
+  @IsString()
+  @IsStrongPassword({
+    minLength: 8,
+    minUppercase: 1,
+    minNumbers: 1,
+    minSymbols: 1,
+  })
+  newPassword: string;
+
+  @IsString()
+  @Match('newPassword', {
+    message: 'Password confirmation does not match',
+  })
+  confirmPassword: string;
+}
+
+export class UpdatePasswordDTO {
+  @IsString()
+  oldPassword: string;
+
+  @IsString()
+  @IsStrongPassword({
+    minLength: 8,
+    minUppercase: 1,
+    minNumbers: 1,
+    minSymbols: 1,
+  })
+  newPassword: string;
+
+  @IsString()
+  @Match('newPassword', {
+    message: 'Password confirmation does not match',
+  })
+  confirmPassword: string;
+}

@@ -8,6 +8,7 @@ const userController = new UserController();
 
 userRoute
   .route('/:username')
-  .get(userController.getUser);
+  .get(userController.getUser)
+  .patch(userController.updateUser);
 
 export default userRoute;
