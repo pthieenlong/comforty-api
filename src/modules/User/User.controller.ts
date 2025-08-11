@@ -28,7 +28,7 @@ export default class UserController {
       const input: UserUpdateDTO = req.body;
       const username: string = req.params.username;
       if (req.file) {
-        input.avatar = `public/uploads/avatars/${username}/${req.file.filename}`;
+        input.avatar = `public/uploads/avatars/${req.file.filename}`;
       }
       const result = await UserService.updateUserInformations(username, input);
       return res.status(result.httpCode).json(result);
