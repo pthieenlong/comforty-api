@@ -1,5 +1,5 @@
 import { User } from './User.model';
-import CustomRequest from '@/types/custom/CustomRequest';
+import { UserUpdateDTO } from './User.dto';
 import CustomResponse from '@/types/custom/CustomResponse';
 export class UserService {
   public static async getUser(username: string): Promise<CustomResponse> {
@@ -51,11 +51,20 @@ export class UserService {
       };
     }
   }
-  public static async updateUserInformations(): Promise<CustomResponse> {
-    return {
-      httpCode: 409,
-      success: false,
-      message: 'USER.GET.FAIL',
-    };
+  public static async updateUserInformations(input: UserUpdateDTO): Promise<CustomResponse> {
+    try {
+      return {
+        httpCode: 409,
+        success: false,
+        message: 'USER.GET.FAIL',
+      };
+    } catch (error) {
+      return {
+        httpCode: 409,
+        success: false,
+        message: 'USER.UPDATE.CONFLICT',
+        error: error
+      };
+    }
   }
 }

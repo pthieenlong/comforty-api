@@ -332,5 +332,20 @@ export default class AuthService {
     }
   }
 
-  public static async sendVerifyEmail() {}
+  public static async updateForgetPassword(): Promise<CustomResponse> {
+    try {
+      return {
+        httpCode: 409,
+        success: false,
+        message: 'TOKEN.GET.CONFLICT',
+      };
+    } catch (error) {
+      return {
+        httpCode: 409,
+        success: false,
+        message: 'TOKEN.GET.CONFLICT',
+        error,
+      };
+    }
+  }
 }
