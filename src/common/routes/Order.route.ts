@@ -24,6 +24,7 @@ orderRoute.route('/checkout').post(orderController.checkout);
 
 // Admin routes
 orderRoute.route('/admin/orders').get(orderController.getAllOrdersAdmin);
+orderRoute.route('/admin/orders/:id').get(orderController.getOrderDetailsByID);
 orderRoute
   .route('/admin/orders/:orderId/status')
   .patch(orderController.updateOrderStatusAdmin);

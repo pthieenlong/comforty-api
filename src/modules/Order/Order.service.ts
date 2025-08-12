@@ -268,4 +268,29 @@ export default class OrderService {
       };
     }
   }
+  public static async getOrderDetailsByID(id: string): Promise<CustomResponse> {
+    try {
+      const order = await Order.findOne({ _id: id });
+      if (!order) {
+        return {
+          httpCode: 404,
+          success: false,
+          message: 'ORDER.NOT_FOUND',
+        };
+      }
+      return {
+        httpCode: 200,
+        success: true,
+        message: 'ORDER.GET.SUCCESS',
+        data: order,
+      };
+    } catch (error) {
+      return {
+        httpCode: 500,
+        success: false,
+        message: 'ORDER.GET.FAIL',
+        error,
+      };
+    }
+  }
 }

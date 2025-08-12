@@ -26,6 +26,12 @@ export default class OrderController {
     return res.status(result.httpCode).json(result);
   }
 
+  public async getOrderDetailsByID(req: Request, res: Response): Promise<any> {
+    const { id } = req.params;
+    const result = await OrderService.getOrderDetailsByID(id);
+    return res.status(result.httpCode).json(result);
+  }
+
   public async checkout(req: Request, res: Response): Promise<any> {
     const input: {
       firstName: string;
