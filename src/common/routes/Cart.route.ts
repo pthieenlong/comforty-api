@@ -9,7 +9,15 @@ const cartController = new CartController();
 
 // cartRoute.use(AuthVerifyMiddleware);
 
-cartRoute.route('/:username').get(cartController.getCartByUser);
+cartRoute
+  .route('/:username')
+  .get(cartController.getCartByUser)
+  .delete(cartController.clearCart);
+cartRoute
+  .route('/:username/product/quantity')
+  .put(cartController.updateQuantity);
+cartRoute.route('/:username/summary').get(cartController.getCartSummary);
+
 cartRoute.route('/:username/sync').post(cartController.syncCart);
 cartRoute
   .route('/:username/product')

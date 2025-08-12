@@ -1,15 +1,12 @@
-import { Request, Response } from "express";
-import { ValidateRequest } from "@/common/decorators/validation.decorator";
-import CustomResponse from "@/types/custom/CustomResponse";
-import { configModule } from "@/common/config/config.module";
-import CustomRequest from "@/types/custom/CustomRequest";
-import { CategoryService } from "./Category.service";
-import { CategoryDTO, UpdateCategoryDTO } from "./Category.dto";
+import { Request, Response } from 'express';
+import { ValidateRequest } from '@/common/decorators/validation.decorator';
+import CustomResponse from '@/types/custom/CustomResponse';
+import { configModule } from '@/common/config/config.module';
+import CustomRequest from '@/types/custom/CustomRequest';
+import { CategoryService } from './Category.service';
+import { CategoryDTO, UpdateCategoryDTO } from './Category.dto';
 export default class CategoryController {
-  public async getCategories(
-    req: Request,
-    res: Response,
-  ): Promise<any> {
+  public async getCategories(req: Request, res: Response): Promise<any> {
     const categories = await CategoryService.getCategories();
     return res.json(categories);
   }
@@ -31,13 +28,21 @@ export default class CategoryController {
     return res.status(result.httpCode).json(result);
   }
 
-  public async getProductsByCategorySlug(req: Request, res: Response): Promise<any> {
+  public async getProductsByCategorySlug(
+    req: Request,
+    res: Response,
+  ): Promise<any> {
     const { slug } = req.params;
-    const result = await CategoryService.getProductsByCategorySlug(slug);
+    const result = await CategoryService.getCategoryBySlug(slug);
+    // const result = await CategoryService.getProductsByCategorySlug(slug);
+    console.log(slug, result);
 
     return res.status(result.httpCode).json(result);
   }
-  public async getCategoriesWithProductCount(req: Request, res: Response): Promise<any> {
+  public async getCategoriesWithProductCount(
+    req: Request,
+    res: Response,
+  ): Promise<any> {
     const result = await CategoryService.getCategoriesWithProductCount();
     return res.status(result.httpCode).json(result);
   }

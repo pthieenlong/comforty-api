@@ -82,9 +82,9 @@ export default class OrderService {
       };
     } catch (error) {
       return {
-        httpCode: 409,
+        httpCode: 500,
         success: false,
-        message: 'ORDER.CHECKOUT.CONFLICT',
+        message: 'ORDER.GET.FAIL',
         error,
       };
     }
@@ -111,9 +111,9 @@ export default class OrderService {
       };
     } catch (error) {
       return {
-        httpCode: 409,
+        httpCode: 500,
         success: false,
-        message: 'ORDER.CHECKOUT.CONFLICT',
+        message: 'ORDER.GET.FAIL',
         error,
       };
     }
@@ -123,7 +123,14 @@ export default class OrderService {
     username: string,
   ): Promise<CustomResponse> {
     try {
-      const order = await Order.find({ _id: id, username });
+      const order = await Order.findOne({ _id: id, username });
+      if (!order) {
+        return {
+          httpCode: 404,
+          success: false,
+          message: 'ORDER.NOT_FOUND',
+        };
+      }
       return {
         httpCode: 200,
         success: true,
@@ -132,9 +139,131 @@ export default class OrderService {
       };
     } catch (error) {
       return {
-        httpCode: 409,
+        httpCode: 500,
         success: false,
-        message: 'ORDER.CHECKOUT.CONFLICT',
+        message: 'ORDER.GET.FAIL',
+        error,
+      };
+    }
+  }
+
+  public static async updateOrderStatus(
+    orderId: string,
+    status: CartStatus,
+    username?: string,
+  ): Promise<CustomResponse> {
+    try {
+      const query: any = { _id: orderId };
+      if (username) {
+        query.username = username;
+      }
+
+      const order = await Order.findOne(query);
+      if (!order) {
+        return {
+          httpCode: 404,
+          success: false,
+          message: 'ORDER.NOT_FOUND',
+        };
+      }
+
+      order.status = status;
+      order.updatedAt = new Date();
+      await order.save();
+
+      return {
+        httpCode: 200,
+        success: true,
+        message: 'ORDER.UPDATE.SUCCESS',
+        data: order,
+      };
+    } catch (error) {
+      return {
+        httpCode: 500,
+        success: false,
+        message: 'ORDER.UPDATE.FAIL',
+        error,
+      };
+    }
+  }
+
+  public static async getOrderStatistics(
+    username?: string,
+  ): Promise<CustomResponse> {
+    try {
+      const query: any = {};
+      if (username) {
+        query.username = username;
+      }
+
+      const totalOrders = await Order.countDocuments(query);
+      const pendingOrders = await Order.countDocuments({
+        ...query,
+        status: CartStatus.PENDING,
+      });
+      const shippingOrders = await Order.countDocuments({
+        ...query,
+        status: CartStatus.SHIPPING,
+      });
+      const completedOrders = await Order.countDocuments({
+        ...query,
+        status: CartStatus.COMPLETED,
+      });
+
+      // Tính tổng doanh thu
+      const revenueResult = await Order.aggregate([
+        { $match: query },
+        {
+          $group: {
+            _id: null,
+            totalRevenue: { $sum: '$total' },
+            averageOrderValue: { $avg: '$total' },
+          },
+        },
+      ]);
+
+      const totalRevenue = revenueResult[0]?.totalRevenue || 0;
+      const averageOrderValue = revenueResult[0]?.averageOrderValue || 0;
+
+      // Thống kê theo tháng (6 tháng gần nhất)
+      const monthlyStats = await Order.aggregate([
+        { $match: query },
+        {
+          $group: {
+            _id: {
+              year: { $year: '$createdAt' },
+              month: { $month: '$createdAt' },
+            },
+            orderCount: { $sum: 1 },
+            revenue: { $sum: '$total' },
+          },
+        },
+        { $sort: { '_id.year': -1, '_id.month': -1 } },
+        { $limit: 6 },
+      ]);
+      const result = {
+        overview: {
+          totalOrders,
+          pendingOrders,
+          shippingOrders,
+          completedOrders,
+          totalRevenue,
+          averageOrderValue: Math.round(averageOrderValue * 100) / 100,
+        },
+        monthlyStats: monthlyStats.reverse(),
+      };
+      return {
+        httpCode: 200,
+        success: true,
+        message: 'ORDER.STATISTICS.SUCCESS',
+        data: result,
+      };
+    } catch (error) {
+      console.error('Get order statistics error:', error);
+      return {
+        httpCode: 500,
+        success: false,
+        message: 'ORDER.STATISTICS.FAIL',
         error,
       };
     }

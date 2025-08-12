@@ -8,7 +8,7 @@ const productController = new ProductController();
 
 productRoute
   .route('')
-  .post(AuthVerifyMiddleware, adminOnly(), productController.createProduct)
+  .post(productController.createProduct)
   .get((req, res, next) => {
     if (req.query.category) {
       return productController.getAllProductsWithCategorySlug(req, res);
@@ -30,7 +30,7 @@ productRoute
   .route('/:slug')
   .get(productController.getProductBySlug)
   .patch(productController.updateProductBySlug)
-  .delete(productController.removeProductBySlug)
+  .delete(productController.removeProductBySlug);
 productRoute.route('/sale/:slug').patch(productController.updateProductSale);
 productRoute
   .route('/visible/:slug')

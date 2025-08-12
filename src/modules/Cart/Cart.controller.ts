@@ -52,4 +52,22 @@ export default class CartController {
     const results = await CartService.removeItem(username, slug);
     return res.status(results.httpCode).json(results);
   }
+  public async clearCart(req: Request, res: Response): Promise<any> {
+    const username = req.params.username;
+    const results = await CartService.clearCart(username);
+    return res.status(results.httpCode).json(results);
+  }
+
+  public async updateQuantity(req: Request, res: Response): Promise<any> {
+    const username = req.params.username;
+    const { slug, quantity } = req.body;
+    const results = await CartService.updateQuantity(username, slug, quantity);
+    return res.status(results.httpCode).json(results);
+  }
+
+  public async getCartSummary(req: Request, res: Response): Promise<any> {
+    const username = req.params.username;
+    const results = await CartService.getCartSummary(username);
+    return res.status(results.httpCode).json(results);
+  }
 }

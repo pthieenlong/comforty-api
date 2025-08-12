@@ -165,12 +165,12 @@ export default class CartService {
       const itemInCart = items.find((val) => val.slug === product.slug);
       if (itemInCart) {
         itemInCart.quantity += 1;
-        itemInCart.price += product.price;
+        itemInCart.price = product.price * itemInCart.quantity;
 
         cart.items[items.findIndex((val) => val.slug === itemInCart.slug)] =
           itemInCart;
 
-        cart.total += product.price;
+        cart.total = cart.items.reduce((sum, item) => sum + item.price, 0);
 
         await cart.save();
 
@@ -193,7 +193,7 @@ export default class CartService {
         inStock: true,
       });
 
-      cart.total += product.price;
+      cart.total = cart.items.reduce((sum, item) => sum + item.price, 0);
 
       const result = await cart.save();
 
@@ -295,7 +295,7 @@ export default class CartService {
         return {
           httpCode: 404,
           success: false,
-          message: 'ITEM.NOT_FOUND_IN_CART',
+          message: 'PRODUCT.GET.NOT_FOUND',
         };
       }
 
@@ -352,21 +352,112 @@ export default class CartService {
     }
   }
 
-  public static async updateStatus(
+  public static async updateQuantity(
     username: string,
-    status: CartStatus,
+    slug: string,
+    quantity: number,
   ): Promise<CustomResponse> {
     try {
+      const cart = await Cart.findOne({ username, status: CartStatus.PENDING });
+      if (!cart) {
+        return {
+          httpCode: 404,
+          success: false,
+          message: 'CART.GET.NOT_FOUND',
+        };
+      }
+
+      const product = await Product.findOne({ slug });
+      if (!product) {
+        return {
+          httpCode: 404,
+          success: false,
+          message: 'PRODUCT.GET.NOT_FOUND',
+        };
+      }
+
+      const itemIndex = cart.items.findIndex((item) => item.slug === slug);
+      if (itemIndex === -1) {
+        return {
+          httpCode: 404,
+          success: false,
+          message: 'ITEM.NOT_FOUND_IN_CART',
+        };
+      }
+
+      // Nếu quantity = 0, xóa item khỏi cart
+      if (quantity === 0) {
+        cart.items.splice(itemIndex, 1);
+      } else {
+        // Cập nhật quantity và price
+        cart.items[itemIndex].quantity = quantity;
+        cart.items[itemIndex].price = product.price * quantity;
+      }
+
+      // Tính lại total
+      cart.total = cart.items.reduce((sum, item) => sum + item.price, 0);
+
+      await cart.save();
+
       return {
-        httpCode: 404,
-        success: false,
-        message: 'CART.GET.FAIL',
+        httpCode: 200,
+        success: true,
+        message: 'CART.UPDATE.SUCCESS',
+        data: cart,
       };
     } catch (error) {
+      console.error('Update quantity error:', error);
       return {
-        httpCode: 404,
+        httpCode: 500,
         success: false,
-        message: 'CART.GET.FAIL',
+        message: 'CART.UPDATE.FAIL',
+        error,
+      };
+    }
+  }
+
+  public static async getCartSummary(
+    username: string,
+  ): Promise<CustomResponse> {
+    try {
+      const cart = await Cart.findOne({ username, status: CartStatus.PENDING });
+      const data = {
+        totalItems: 0,
+        totalPrice: 0,
+        itemCount: 0,
+      };
+      if (!cart) {
+        return {
+          httpCode: 200,
+          success: true,
+          message: 'CART.SUMMARY.SUCCESS',
+          data,
+        };
+      }
+
+      const totalItems = cart.items.reduce(
+        (sum, item) => sum + item.quantity,
+        0,
+      );
+      const totalPrice = cart.total;
+      const itemCount = cart.items.length;
+
+      data.totalItems = totalItems;
+      data.totalPrice = totalPrice;
+      data.itemCount = itemCount;
+      return {
+        httpCode: 200,
+        success: true,
+        message: 'CART.SUMMARY.SUCCESS',
+        data,
+      };
+    } catch (error) {
+      console.error('Get cart summary error:', error);
+      return {
+        httpCode: 500,
+        success: false,
+        message: 'CART.SUMMARY.FAIL',
+        error,
       };
     }
   }

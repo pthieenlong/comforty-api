@@ -21,14 +21,17 @@ export default class UserController {
     maxSizeMB: 2,
     allowedTypes: ['image/jpeg', 'image/png'],
     multiple: false,
+    subfolder: 'avatars',
   })
   @ValidateRequest(UserUpdateDTO)
   public async updateUser(req: Request, res: Response): Promise<any> {
+    console.log('update user');
+
     try {
       const input: UserUpdateDTO = req.body;
       const username: string = req.params.username;
       if (req.file) {
-        input.avatar = `public/uploads/avatars/${req.file.filename}`;
+        input.avatar = `public/uploads/images/avatars/${req.file.filename}`;
       }
       const result = await UserService.updateUserInformations(username, input);
       return res.status(result.httpCode).json(result);

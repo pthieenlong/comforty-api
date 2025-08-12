@@ -10,24 +10,24 @@ interface UploadConfig {
   allowedTypes?: string[];
   dest?: string;
   multiple?: boolean;
+  subfolder: 'avatars' | 'products' | 'categories';
 }
 
 export function Upload(config: UploadConfig) {
   const {
     fieldName,
+    subfolder,
     maxCount = 5,
     maxSizeMB = 5,
     allowedTypes = ['image/jpeg', 'image/png', 'image/webp'],
-    dest = path.join(__dirname, '../../', 'public/images/avatars'),
+    dest = path.join(__dirname, '../../', 'public/images', subfolder),
     multiple = false,
   } = config;
 
-  // Tạo folder nếu chưa tồn tại
   if (!fs.existsSync(dest)) {
     fs.mkdirSync(dest, { recursive: true });
   }
 
-  // Cấu hình storage
   const storage = multer.diskStorage({
     destination: (req, file, cb) => cb(null, dest),
     filename: (req, file, cb) => {
@@ -68,9 +68,10 @@ export function Upload(config: UploadConfig) {
     ) {
       uploader(req, res, (err: any) => {
         if (err) {
+          console.log('error: ', err);
           return res.status(400).json({
             success: false,
-            message: 'USER.UPDATE.ERROR',
+            message: 'FILE.UPDATE.ERROR',
             error: err.message || err,
           });
         }

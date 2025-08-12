@@ -48,4 +48,51 @@ export default class OrderController {
 
     return res.status(result.httpCode).json(result);
   }
+
+  public async updateOrderStatus(req: Request, res: Response): Promise<any> {
+    const { orderId } = req.params;
+    const { status } = req.body;
+    const { username } = req.params; // Optional, for user-specific updates
+
+    const result = await OrderService.updateOrderStatus(
+      orderId,
+      status,
+      username,
+    );
+    return res.status(result.httpCode).json(result);
+  }
+
+  public async updateOrderStatusAdmin(
+    req: Request,
+    res: Response,
+  ): Promise<any> {
+    const { orderId } = req.params;
+    const { status } = req.body;
+
+    const result = await OrderService.updateOrderStatus(orderId, status);
+    return res.status(result.httpCode).json(result);
+  }
+
+  public async getAllOrdersAdmin(req: Request, res: Response): Promise<any> {
+    const { page } = req.query;
+    const result = await OrderService.getAllOrders(
+      parseInt((page as string) ?? 1),
+    );
+
+    return res.status(result.httpCode).json(result);
+  }
+
+  public async getOrderStatistics(req: Request, res: Response): Promise<any> {
+    const { username } = req.params;
+    const result = await OrderService.getOrderStatistics(username);
+    return res.status(result.httpCode).json(result);
+  }
+
+  public async getOrderStatisticsAdmin(
+    req: Request,
+    res: Response,
+  ): Promise<any> {
+    const result = await OrderService.getOrderStatistics();
+    return res.status(result.httpCode).json(result);
+  }
 }

@@ -7,21 +7,60 @@ import { Category } from '../Category/Category.model';
 import { IShortProductResponse } from '@/types/interface/Product.type';
 
 export default class ProductService {
+  public static async getProductBySlugRaw(slug: string): Promise<any> {
+    try {
+      return await Product.findOne({ slug });
+    } catch (error) {
+      console.error('Error getting product by slug:', error);
+      return null;
+    }
+  }
   public static async getProductBySlug(slug: string): Promise<CustomResponse> {
     try {
-      const product = await Product.findOne({ slug });
-      if (!product) {
+      const products = await Product.aggregate([
+        {
+          $match: { slug }, // Di chuyển $match lên đầu để tối ưu performance
+        },
+        {
+          $lookup: {
+            from: 'categories',
+            localField: 'category',
+            foreignField: 'slug',
+            as: 'categoryDetails',
+          },
+        },
+        {
+          $addFields: {
+            categoryNames: '$categoryDetails.name',
+          },
+        },
+        {
+          $project: {
+            categoryDetails: 0,
+            category: 0,
+          },
+        },
+      ]);
+
+      if (!products || products.length === 0) {
         return {
           httpCode: 404,
           success: false,
           message: 'PRODUCT.GET.NOT_FOUND',
         };
       }
+      const product = products[0];
+      const transformedProduct = {
+        ...product,
+        category: product.categoryNames || [],
+      };
+      delete transformedProduct.categoryNames;
+
       return {
         httpCode: 200,
         success: true,
         message: 'PRODUCT.GET.SUCCESS',
-        data: product,
+        data: transformedProduct,
       };
     } catch (error) {
       return {
@@ -36,7 +75,7 @@ export default class ProductService {
     categorySlug: string,
   ): Promise<CustomResponse> {
     console.log(categorySlug);
-    
+
     try {
       const products = await Product.find({ category: categorySlug });
       const response: IShortProductResponse[] = products.map((product) => ({
@@ -72,6 +111,7 @@ export default class ProductService {
   ): Promise<CustomResponse> {
     try {
       const slug = Utils.SlugConverter(productInput.title);
+
       const isExist = await Product.findOne({ slug });
       if (isExist) {
         return {
@@ -81,31 +121,85 @@ export default class ProductService {
         };
       }
 
+      let categorySlugs: string[] = [];
+      if (productInput.categories && productInput.categories.length > 0) {
+        const categoryDocs = await Category.find({
+          name: { $in: productInput.categories },
+        }).select('slug');
+
+        if (categoryDocs.length === 0) {
+          return {
+            httpCode: 400,
+            success: false,
+            message: 'CATEGORY.NOT_FOUND',
+          };
+        }
+
+        categorySlugs = categoryDocs.map((cat) => cat.slug);
+      }
+
       const product = new Product({
         _id: uuidv4(),
         slug,
-        ...productInput,
+        title: productInput.title,
+        price: productInput.price,
+        category: categorySlugs,
+        images: productInput.images || ['https://placehold.co/600x400'],
+        salePercent: productInput.salePercent || 0,
+        isSale: productInput.isSale || false,
+        rating: productInput.rating || 0,
+        isVisible:
+          productInput.isVisible !== undefined ? productInput.isVisible : true,
+        shortDesc: productInput.shortDesc || 'Default short description',
+        longDesc: productInput.longDesc || 'Default long description',
+        createdAt: new Date(),
+        updatedAt: new Date(),
       });
-      const isSuccess = await product.save();
 
-      if (isSuccess) {
-        return {
-          httpCode: 201,
-          success: true,
-          message: 'PRODUCT.CREATE.SUCCESS',
-        };
-      }
+      const savedProduct = await product.save();
+
+      const productWithCategories = await Product.findById(
+        savedProduct._id,
+      ).populate({
+        path: 'category',
+        model: 'Category',
+        select: 'name',
+      });
+
+      const transformedProduct = {
+        id: productWithCategories!._id,
+        slug: productWithCategories!.slug,
+        title: productWithCategories!.title,
+        images: productWithCategories!.images,
+        categories: Array.isArray(productWithCategories!.category)
+          ? (productWithCategories!.category as any[]).map(
+              (cat) => cat.name || cat,
+            )
+          : [],
+        price: productWithCategories!.price,
+        isSale: productWithCategories!.isSale,
+        salePercent: productWithCategories!.salePercent,
+        rating: productWithCategories!.rating,
+        isVisible: productWithCategories!.isVisible,
+        shortDesc: productWithCategories!.shortDesc,
+        longDesc: productWithCategories!.longDesc,
+        createdAt: productWithCategories!.createdAt,
+        updatedAt: productWithCategories!.updatedAt,
+      };
 
       return {
-        httpCode: 409,
-        success: false,
-        message: 'PRODUCT.CREATE.FAIL',
+        httpCode: 201,
+        success: true,
+        message: 'PRODUCT.CREATE.SUCCESS',
+        data: transformedProduct,
       };
     } catch (error) {
+      console.error('Create product error:', error);
       return {
-        httpCode: 409,
+        httpCode: 500,
         success: false,
         message: 'PRODUCT.CREATE.FAIL',
+        error,
       };
     }
   }
@@ -145,7 +239,8 @@ export default class ProductService {
         image: product.images[0],
         categories: product.categoryNames,
         price: product.price,
-        isSale: product.isSale,rating: product.rating,
+        isSale: product.isSale,
+        rating: product.rating,
         salePercent: product.salePercent,
         isVisible: product.isVisible,
         createdAt: product.createdAt,
@@ -201,7 +296,7 @@ export default class ProductService {
         slug: product.slug,
         title: product.title,
         image: product.images[0],
-        categories: product.category,
+        categories: product.categoryNames,
         price: product.price,
         isSale: product.isSale,
         salePercent: product.salePercent,
@@ -257,7 +352,7 @@ export default class ProductService {
         slug: product.slug,
         title: product.title,
         image: product.images[0],
-        categories: product.category,
+        categories: product.categoryNames,
         price: product.price,
         isSale: product.isSale,
         salePercent: product.salePercent,
@@ -318,7 +413,7 @@ export default class ProductService {
         slug: product.slug,
         title: product.title,
         image: product.images[0],
-        categories: product.category,
+        categories: product.categoryNames,
         price: product.price,
         isSale: product.isSale,
         salePercent: product.salePercent,
@@ -346,17 +441,35 @@ export default class ProductService {
     limit = 12,
   ): Promise<CustomResponse> {
     try {
-      const products = await Product.find().sort({ rating: -1 }).populate({
-        path: 'category',
-        model: 'Category',
-        select: 'name',
-      });
+      const products = await Product.aggregate([
+        {
+          $lookup: {
+            from: 'categories',
+            localField: 'category',
+            foreignField: 'slug',
+            as: 'categoryDetails',
+          },
+        },
+        {
+          $addFields: {
+            categoryNames: '$categoryDetails.name',
+          },
+        },
+        {
+          $project: {
+            categoryDetails: 0,
+          },
+        },
+        {
+          $sort: { createdAt: 1 },
+        },
+      ]);
       const response: IShortProductResponse[] = products.map((product) => ({
         id: product._id,
         slug: product.slug,
         title: product.title,
         image: product.images[0],
-        categories: product.category,
+        categories: product.categoryNames,
         price: product.price,
         isSale: product.isSale,
         salePercent: product.salePercent,
@@ -414,10 +527,14 @@ export default class ProductService {
     productInput: Partial<UpdateProductDTO>,
   ): Promise<CustomResponse> {
     try {
+      const category = productInput.categories?.map((cate) =>
+        Utils.SlugConverter(cate),
+      );
       const product = await Product.findOneAndUpdate(
         { slug },
         {
           ...productInput,
+          category,
           updatedAt: new Date(),
         },
         {
@@ -515,13 +632,13 @@ export default class ProductService {
   public static async removeProductBySlug(slug: string) {
     try {
       const product = await Product.findOneAndDelete({ slug });
-      if(!product) {
+      if (!product) {
         return {
           httpCode: 404,
           success: false,
           message: 'PRODUCT.DELETE.NOT_FOUND',
         };
-      } 
+      }
       return {
         httpCode: 200,
         success: true,
