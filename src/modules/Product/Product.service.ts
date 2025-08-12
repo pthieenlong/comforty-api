@@ -4,19 +4,8 @@ import Utils from '@/utils/utils';
 import { Product } from './Product.model';
 import { v4 as uuidv4 } from 'uuid';
 import { Category } from '../Category/Category.model';
+import { IShortProductResponse } from '@/types/interface/Product.type';
 
-interface IShortProductResponse {
-  id: string;
-  slug: string;
-  title: string;
-  image: string;
-  categories: string[];
-  price: number;
-  isSale: boolean;
-  salePercent: number;
-  isVisible: boolean;
-  createdAt: Date;
-}
 export default class ProductService {
   public static async getProductBySlug(slug: string): Promise<CustomResponse> {
     try {
@@ -46,14 +35,10 @@ export default class ProductService {
   public static async getAllProductsWithCategorySlug(
     categorySlug: string,
   ): Promise<CustomResponse> {
+    console.log(categorySlug);
+    
     try {
-      const products = await Product.find().populate({
-        path: 'category',
-        model: 'Category',
-        localField: 'category',
-        foreignField: categorySlug,
-        justOne: true,
-      });
+      const products = await Product.find({ category: categorySlug });
       const response: IShortProductResponse[] = products.map((product) => ({
         id: product._id,
         slug: product.slug,
@@ -63,6 +48,7 @@ export default class ProductService {
         price: product.price,
         isSale: product.isSale,
         salePercent: product.salePercent,
+        rating: product.rating,
         isVisible: product.isVisible,
         createdAt: product.createdAt,
       }));
@@ -146,7 +132,7 @@ export default class ProductService {
           },
         },
         {
-          $sort: { createdAt: -1 },
+          $sort: { rating: -1 },
         },
         {
           $limit: 8,
@@ -159,7 +145,7 @@ export default class ProductService {
         image: product.images[0],
         categories: product.categoryNames,
         price: product.price,
-        isSale: product.isSale,
+        isSale: product.isSale,rating: product.rating,
         salePercent: product.salePercent,
         isVisible: product.isVisible,
         createdAt: product.createdAt,
@@ -219,6 +205,7 @@ export default class ProductService {
         price: product.price,
         isSale: product.isSale,
         salePercent: product.salePercent,
+        rating: product.rating,
         isVisible: product.isVisible,
         createdAt: product.createdAt,
       }));
@@ -274,6 +261,7 @@ export default class ProductService {
         price: product.price,
         isSale: product.isSale,
         salePercent: product.salePercent,
+        rating: product.rating,
         isVisible: product.isVisible,
         createdAt: product.createdAt,
       }));
@@ -334,6 +322,7 @@ export default class ProductService {
         price: product.price,
         isSale: product.isSale,
         salePercent: product.salePercent,
+        rating: product.rating,
         isVisible: product.isVisible,
         createdAt: product.createdAt,
       }));
@@ -357,7 +346,7 @@ export default class ProductService {
     limit = 12,
   ): Promise<CustomResponse> {
     try {
-      const products = await Product.find().sort({ createdAt: -1 }).populate({
+      const products = await Product.find().sort({ rating: -1 }).populate({
         path: 'category',
         model: 'Category',
         select: 'name',
@@ -371,6 +360,7 @@ export default class ProductService {
         price: product.price,
         isSale: product.isSale,
         salePercent: product.salePercent,
+        rating: product.rating,
         isVisible: product.isVisible,
         createdAt: product.createdAt,
       }));
@@ -431,8 +421,8 @@ export default class ProductService {
           updatedAt: new Date(),
         },
         {
-          new: true, // Return document sau khi update
-          runValidators: true, // Chạy schema validators
+          new: true,
+          runValidators: true,
         },
       );
 
@@ -502,7 +492,7 @@ export default class ProductService {
         return {
           httpCode: 404,
           success: false,
-          message: 'PRODUCT.GET.FAIL',
+          message: 'PRODUCT.GET.NOT_FOUND',
         };
       }
 
@@ -513,12 +503,35 @@ export default class ProductService {
         data: product,
       };
     } catch (error) {
-      console.log(error);
-
       return {
         httpCode: 409,
         success: false,
         message: 'PRODUCT.UPDATE.FAIL',
+        error,
+      };
+    }
+  }
+
+  public static async removeProductBySlug(slug: string) {
+    try {
+      const product = await Product.findOneAndDelete({ slug });
+      if(!product) {
+        return {
+          httpCode: 404,
+          success: false,
+          message: 'PRODUCT.DELETE.NOT_FOUND',
+        };
+      } 
+      return {
+        httpCode: 200,
+        success: true,
+        message: 'PRODUCT.DELETE.SUCCESS',
+      };
+    } catch (error) {
+      return {
+        httpCode: 409,
+        success: false,
+        message: 'PRODUCT.DELETE.FAIL',
         error,
       };
     }

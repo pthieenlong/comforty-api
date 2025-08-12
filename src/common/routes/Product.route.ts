@@ -10,7 +10,7 @@ productRoute
   .route('')
   .post(AuthVerifyMiddleware, adminOnly(), productController.createProduct)
   .get((req, res, next) => {
-    if (req.query.c) {
+    if (req.query.category) {
       return productController.getAllProductsWithCategorySlug(req, res);
     } else if (req.query.search) {
       return productController.getSearchProducts(req, res);
@@ -29,8 +29,8 @@ productRoute.route('/sale').get(productController.getSaleProducts);
 productRoute
   .route('/:slug')
   .get(productController.getProductBySlug)
-  .patch(productController.updateProductBySlug);
-
+  .patch(productController.updateProductBySlug)
+  .delete(productController.removeProductBySlug)
 productRoute.route('/sale/:slug').patch(productController.updateProductSale);
 productRoute
   .route('/visible/:slug')

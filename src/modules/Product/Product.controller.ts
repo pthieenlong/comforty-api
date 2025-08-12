@@ -22,7 +22,7 @@ export default class ProductController {
     req: Request,
     res: Response,
   ): Promise<any> {
-    const categorySlug = req.query.c;
+    const categorySlug = req.query.category;
     const results = await ProductService.getAllProductsWithCategorySlug(
       categorySlug as string,
     );
@@ -86,5 +86,11 @@ export default class ProductController {
     );
 
     return res.status(result.httpCode).json(result);
+  }
+
+  public async removeProductBySlug(req: Request, res: Response): Promise<any> {
+    const slug = req.params.slug;
+    const result = await ProductService.removeProductBySlug(slug as string);
+    return res.status(result.httpCode).json(result);    
   }
 }

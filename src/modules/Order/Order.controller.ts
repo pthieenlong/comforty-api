@@ -37,7 +37,6 @@ export default class OrderController {
       total: number;
       username?: string;
     } = req.body;
-    console.log(`username: ${input.username}`);
     const result = await OrderService.checkout(input);
     return res.status(result.httpCode).json(result);
   }

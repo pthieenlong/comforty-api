@@ -11,4 +11,9 @@ categoryRoute
   .route('/')
   .get(categoryController.getCategories)
   .post(AuthVerifyMiddleware, adminOnly(), categoryController.createCategory)
+categoryRoute.route('/count').get(categoryController.getCategoriesWithProductCount);
+categoryRoute.route('/:slug')
+  .get(categoryController.getProductsByCategorySlug)
+  .patch(categoryController.updateCategoryBySlug)
+  .delete(categoryController.removeCategoryBySlug);
 export default categoryRoute;

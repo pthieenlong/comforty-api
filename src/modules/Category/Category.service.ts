@@ -2,6 +2,9 @@ import CustomResponse from '@/types/custom/CustomResponse';
 import { Category } from "./Category.model";
 import { v4 as uuidv4 } from 'uuid'
 import Utils from '@/utils/utils';
+import { UpdateCategoryDTO } from './Category.dto';
+import { Product } from '../Product/Product.model';
+import { IShortProductResponse } from '@/types/interface/Product.type';
 
 export class CategoryService {
   public static async getCategories(): Promise<CustomResponse> {
@@ -66,6 +69,137 @@ export class CategoryService {
         message: 'CATEGORY.CREATE.ERROR',
         error
       }
+    }
+  }
+
+  public static async updateCategoryBySlug(slug: string, inputValue: UpdateCategoryDTO): Promise<CustomResponse> {
+    try {
+      const category = await Category.findOneAndUpdate({ slug }, {
+        ...inputValue
+      }, { new: true });
+      if(!category) {
+        return {
+          httpCode: 404,
+          success: false,
+          message: "CATEGORY.GET.NOT_FOUND"
+        }
+      }
+      return {
+        httpCode: 200,
+        success: true,
+        message: "CATEGORY.UPDATE.SUCCESS",
+      }
+    } catch (error) {
+      return {
+        httpCode: 500,
+        success: false,
+        message: "CATEGORY.UPDATE.CONFLICT",
+        error
+      }
+    }
+  }
+
+  public static async getProductsByCategorySlug(slug: string): Promise<CustomResponse> {
+    try {
+      const category = await Category.findOne({ slug });
+      if(!category) {
+        return {
+          httpCode: 404,
+          success: false,
+          message: "CATEGORY.GET.NOT_FOUND"
+        }
+      }
+      const products = await Product.find({ category: category.slug });
+      if(!products) {
+        return {
+          httpCode: 404,
+          success: false,
+          message: "PRODUCT.GET.NOT_FOUND"
+        }
+      }
+      const response: IShortProductResponse[] = products.map((product) => ({
+        id: product._id,
+        slug: product.slug,
+        title: product.title,
+        image: product.images[0],
+        categories: product.category,
+        price: product.price,
+        isSale: product.isSale,
+        salePercent: product.salePercent,
+        rating: product.rating,
+        isVisible: product.isVisible,
+        createdAt: product.createdAt,
+      }));
+      return {
+        httpCode: 200,
+        success: true,
+        message: 'PRODUCT.GET.SUCCESS',
+        data: response,
+      }; 
+    } catch (error) {
+      return {
+        httpCode: 500,
+        success: false,
+        message: "CATEGORY.GET.CONFLICT",
+        error
+      }
+    }
+  }
+
+  public static async getCategoriesWithProductCount(): Promise<CustomResponse> {
+    try {
+      const categories = await Category.find().lean();
+      const results = await Promise.all(
+        categories.map(async (cat) => {
+          const count = await Product.countDocuments({
+            category: cat.slug // nếu Product.category là mảng slug
+          });
+
+          return {
+            slug: cat.slug,
+            name: cat.name,
+            productCount: count
+          };
+        })
+      );
+      return {
+        httpCode: 200,
+        success: true,
+        message: "CATEGORY.GET.SUCCESS",
+        data: results
+      }
+    } catch (error) {
+      return {
+        httpCode: 500,
+        success: false,
+        message: "CATEGORY.UPDATE.CONFLICT",
+        error
+      }
+    }
+  }
+
+  public static async removeCategoryBySlug(slug: string) {
+    try {
+      const category = await Category.findOneAndDelete({ slug });
+      if(!category) {
+        return {
+          httpCode: 404,
+          success: false,
+          message: 'CATEGORY.DELETE.NOT_FOUND',
+        };
+      } 
+      return {
+        httpCode: 200,
+        success: true,
+        message: 'CATEGORY.DELETE.SUCCESS',
+      };
+    } catch (error) {
+      return {
+        httpCode: 409,
+        success: false,
+        message: 'CATEGORY.DELETE.FAIL',
+        error,
+      };
     }
   }
 }
